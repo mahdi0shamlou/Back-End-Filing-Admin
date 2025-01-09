@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
-class users_amin(db.Model):
+class users_admin(db.Model):
     __tablename__ = 'users_admin'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     username = db.Column(db.String(191), unique=True, nullable=False)
