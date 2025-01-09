@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 import configparser
 from flask import jsonify
 from models import db
 from cache import cache
+from auth import auth_bp
 
 
 config = configparser.ConfigParser()
@@ -38,6 +39,10 @@ cache.init_app(app, config={
     'CACHE_REDIS_DB': 0,
     'CACHE_REDIS_URL': 'redis://localhost:6379/0'
 })
+
+
+app.register_blueprint(auth_bp)
+
 
 @jwt.expired_token_loader
 def expired_token_callback(jwt_header, jwt_payload):
