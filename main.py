@@ -4,7 +4,7 @@ from flask_cors import CORS
 import configparser
 from flask import jsonify
 from models import db
-
+from cache import cache
 
 
 config = configparser.ConfigParser()
