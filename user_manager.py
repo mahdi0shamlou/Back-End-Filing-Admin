@@ -1,10 +1,7 @@
 from flask import request, Blueprint, jsonify
-#-------------jwt tokens
 from flask_jwt_extended import jwt_required, get_jwt_identity
-#-------------
-#------------- models
 from models import users, users_admin, db
-
+from datetime import datetime
 
 user_manger_bp = Blueprint('user_manger', __name__)
 
@@ -28,7 +25,31 @@ def UserManager_List():
         page = request_data.get('page', 1)
         per_page = request_data.get('perpage', 10)
 
-        pagination = users.query.paginate(
+        # دریافت پارامترهای جستجو
+        search_name = request_data.get('name', None)
+        search_phone = request_data.get('phone', None)
+        search_address = request_data.get('address', None)
+        search_created_at = request_data.get('created_at', None)  # تاریخ ثبت نام
+
+        # ساخت کوئری پایه
+        query = users.query
+
+        # اضافه کردن فیلترها بر اساس پارامترهای جستجو
+        if search_name:
+            query = query.filter(users.name.ilike(f'%{search_name}%'))
+
+        if search_phone:
+            query = query.filter(users.phone.ilike(f'%{search_phone}%'))
+
+        if search_address:
+            query = query.filter(users.address.ilike(f'%{search_address}%'))
+
+        if search_created_at:
+            created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
+            query = query.filter(users.created_at >= created_at_date)
+
+        # انجام pagination
+        pagination = query.paginate(
             page=page,
             per_page=per_page,
             error_out=False
@@ -43,7 +64,7 @@ def UserManager_List():
             'address': user.address,
             'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
         } for user in pagination.items]
-        print(users_list)
+
         return jsonify({
             'status': 'success',
             'data': {
@@ -54,6 +75,33 @@ def UserManager_List():
             }
         }), 200
 
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+
+@user_manger_bp.route('/UserManager/<int:user_id>', methods=['GET'])
+@jwt_required()
+def UserManager_Details(user_id):
+    try:
+        user = users.query.get(user_id)
+
+        if not user:
+            return jsonify({'status': 'error', 'message': 'کاربر پیدا نشد!'}), 404
+
+        user_details = {
+            'id': user.id,
+            'username': user.username,
+            'name': user.name,
+            'email': user.email,
+            'phone': user.phone,
+            'address': user.address,
+            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+        return jsonify({'status': 'success', 'data': user_details}), 200
 
     except Exception as e:
         return jsonify({
@@ -62,3 +110,78 @@ def UserManager_List():
         }), 500
 
 
+@user_manger_bp.route('/UserManager/Edit/<int:user_id>', methods=['PUT'])
+@jwt_required()
+def UserManager_Edit(user_id):
+    try:
+        request_data = request.get_json()
+
+        user = users.query.get(user_id)
+
+        if not user:
+            return jsonify({'status': 'error', 'message': 'کاربر پیدا نشد!'}), 404
+
+        # بروزرسانی اطلاعات کاربر
+        user.username = request_data.get('username', user.username)
+        user.name = request_data.get('name', user.name)
+        user.phone = request_data.get('phone', user.phone)
+        user.address = request_data.get('address', user.address)
+        user.email = request_data.get('email', user.email)
+
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'کاربر با موفقیت ویرایش شد!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+
+@user_manger_bp.route('/UserManager/Delete/<int:user_id>', methods=['DELETE'])
+@jwt_required()
+def UserManager_Delete(user_id):
+    try:
+        user = users.query.get(user_id)
+
+        if not user:
+            return jsonify({'status': 'error', 'message': 'کاربر پیدا نشد!'}), 404
+
+        db.session.delete(user)
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'کاربر با موفقیت حذف شد!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+
+@user_manger_bp.route('/UserManager/Add', methods=['POST'])
+@jwt_required()
+def UserManager_Add():
+    try:
+        request_data = request.get_json()
+
+        new_user = users(
+            username=request_data['username'],
+            password=request_data['password'],  # توجه: رمز عبور باید هش شود!
+            name=request_data['name'],
+            phone=request_data['phone'],
+            address=request_data.get('address'),
+            email=request_data['email']
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'کاربر جدید با موفقیت اضافه شد!'}), 201
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
