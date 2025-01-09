@@ -171,7 +171,7 @@ def UserManager_Add():
             password=request_data['password'],  # توجه: رمز عبور باید هش شود!
             name=request_data['name'],
             phone=request_data['phone'],
-            address=request_data.get('address'),
+            address=request_data['address'],
             email=request_data['email']
         )
 
