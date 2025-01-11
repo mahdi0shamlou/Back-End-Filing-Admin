@@ -95,3 +95,45 @@ def scrapper_neighborhoods_list():
     neighborhoods = Neighborhoods_For_Scrapper.query.filter(Neighborhoods_For_Scrapper.name.ilike(f'%{name}%')).all()
     return jsonify([{"id": n.id, "name_in_divar": n.name, "neighborhoods_id_in_arka": n.neighborhoods_id, "city_id": n.city_id, "date_created": n.date_created} for n in
                     neighborhoods]), 200
+
+@neighborhoods_bp.route('/Scrapper/Neighborhoods', methods=['POST'])
+@jwt_required()
+def scrapper_add_neighborhood():
+    try:
+        data = request.get_json()
+
+        # بررسی وجود نام محله در داده‌های ورودی
+        if 'name' not in data or 'city_id' not in data or 'neighborhoods_id' not in data or 'scrapper_id' not in data:
+            return jsonify({"message": "Name and city_id are required"}), 400
+
+        # ایجاد یک محله جدید
+        new_neighborhood = Neighborhoods_For_Scrapper(
+            name=data['name'],
+            city_id=data['city_id'],
+            neighborhoods_id=data['neighborhoods_id'],
+            scrapper_id=data['scrapper_id'],
+            date_created=datetime.now()
+        )
+
+        # اضافه کردن محله به دیتابیس
+        db.session.add(new_neighborhood)
+        db.session.commit()
+
+        return jsonify({"message": "Neighborhood added successfully", "id": new_neighborhood.id}), 201
+    except Exception as e:
+        print(e)
+        return str(e)
+
+@neighborhoods_bp.route('/Scrapper/Neighborhoods/<int:id>', methods=['DELETE'])
+@jwt_required()
+def scrapper_delete_neighborhood(id):
+    neighborhood = Neighborhoods_For_Scrapper.query.filter_by(id=id).first()
+    if not neighborhood:
+        return jsonify({
+            'status': 'error',
+            'message': 'محله موجود نیست !'
+        }), 403
+    db.session.delete(neighborhood)
+    db.session.commit()
+
+    return jsonify({"message": "محله با موفقیت حذف شد !"}), 200
