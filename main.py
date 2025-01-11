@@ -8,6 +8,7 @@ from cache import cache
 #-------------------------
 from auth import auth_bp
 from user_manager import user_manger_bp
+from neighborhoods import neighborhoods_bp
 
 config = configparser.ConfigParser()
 config.read('core/db_config.ini')
@@ -44,6 +45,7 @@ cache.init_app(app, config={
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(user_manger_bp)
+app.register_blueprint(neighborhoods_bp)
 
 
 @jwt.expired_token_loader

@@ -34,5 +34,5 @@ class Neighborhood(db.Model): # این جدول محلات رو در بر دار
     __tablename__ = 'Neighborhoods'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     name = db.Column(db.String(191), nullable=False)
-    city_id = db.Column(db.BigInteger, db.ForeignKey('Cities.id', ondelete='CASCADE'), nullable=False)
+    city_id = db.Column(db.BigInteger, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
