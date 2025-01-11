@@ -86,6 +86,17 @@ def UserManager_List():
 @jwt_required()
 def UserManager_Details(user_id):
     try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
         user = users.query.get(user_id)
 
         if not user:
@@ -114,6 +125,17 @@ def UserManager_Details(user_id):
 @jwt_required()
 def UserManager_Edit(user_id):
     try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
         request_data = request.get_json()
 
         user = users.query.get(user_id)
@@ -143,6 +165,17 @@ def UserManager_Edit(user_id):
 @jwt_required()
 def UserManager_Delete(user_id):
     try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
         user = users.query.get(user_id)
 
         if not user:
@@ -164,6 +197,17 @@ def UserManager_Delete(user_id):
 @jwt_required()
 def UserManager_Add():
     try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
         request_data = request.get_json()
 
         new_user = users(
@@ -200,7 +244,7 @@ def UserManager_Admin_List():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.status != 1 or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -272,6 +316,18 @@ def UserManager_Admin_List():
 @jwt_required()
 def UserManager_Admin_Edit(user_id):
     try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1 or admin.type != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+
         request_data = request.get_json()
 
         user = users_admin.query.get(user_id)
@@ -303,6 +359,17 @@ def UserManager_Admin_Edit(user_id):
 @jwt_required()
 def UserManager_Admin_Delete(user_id):
     try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1 or admin.type != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
         user = users_admin.query.get(user_id)
 
         if not user:
@@ -324,6 +391,17 @@ def UserManager_Admin_Delete(user_id):
 @jwt_required()
 def UserManager_Admin_Add():
     try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1 or admin.type != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
         request_data = request.get_json()
 
         new_user = users_admin(

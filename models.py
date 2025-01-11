@@ -29,3 +29,10 @@ class users(db.Model):
     email = db.Column(db.String(191), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+class Neighborhood(db.Model): # این جدول محلات رو در بر دارد
+    __tablename__ = 'Neighborhoods'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    city_id = db.Column(db.BigInteger, db.ForeignKey('Cities.id', ondelete='CASCADE'), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.now())
