@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import Neighborhood, db
+from models import Neighborhood, db, Neighborhoods_For_Scrapper
 from datetime import datetime
 
 
@@ -82,3 +82,16 @@ def add_neighborhood():
     except Exception as e:
         print(e)
         return str(e)
+
+#------------------------------------------
+#-------------- Neighborhoods_For_Scrapper
+#------------------------------------------
+
+@neighborhoods_bp.route('/Scrapper/Neighborhoods/List', methods=['POST'])
+@jwt_required()
+def scrapper_neighborhoods_list():
+    request_data = request.get_json()
+    name = request_data.get('name', 1)
+    neighborhoods = Neighborhoods_For_Scrapper.query.filter(Neighborhoods_For_Scrapper.name.ilike(f'%{name}%')).all()
+    return jsonify([{"id": n.id, "name_in_divar": n.name, "neighborhoods_id_in_arka": n.neighborhoods_id, "city_id": n.city_id, "date_created": n.date_created} for n in
+                    neighborhoods]), 200

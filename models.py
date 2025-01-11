@@ -36,3 +36,12 @@ class Neighborhood(db.Model): # این جدول محلات رو در بر دار
     name = db.Column(db.String(191), nullable=False)
     city_id = db.Column(db.BigInteger, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
+
+class Neighborhoods_For_Scrapper(db.Model): # این جدول محلات رو در بر دارد
+    __tablename__ = 'Neighborhoods_For_Scrapper'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    neighborhoods_id = db.Column(db.BigInteger, nullable=False)
+    scrapper_id = db.Column(db.BigInteger, nullable=False)
+    city_id = db.Column(db.BigInteger, nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.now())
