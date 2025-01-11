@@ -191,7 +191,6 @@ def UserManager_Add():
 #------------------------------------
 
 
-
 @user_manger_bp.route('/UserManager/Admin/List', methods=['POST'])
 @jwt_required()
 def UserManager_Admin_List():
@@ -331,7 +330,10 @@ def UserManager_Admin_Add():
             name=request_data['name'],
             phone=request_data['phone'],
             address=request_data['address'],
-            email=request_data['email']
+            email=request_data['email'],
+            status=request_data['status'],
+            type=request_data['type']
+
         )
 
         db.session.add(new_user)
