@@ -72,6 +72,55 @@ def classification_list():
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
 
+@classification_bp.route('/Classification/Details/<int:classification_id>', methods=['POST'])
+@jwt_required()
+def classification_details(classification_id):
+    try:
+        classification_data = (
+            db.session.query(Classification)
+            .filter(Classification.id == classification_id)
+            .join(ClassificationNeighborhood, ClassificationNeighborhood.classifiction_id == Classification.id)
+            .join(Neighborhood, Neighborhood.id == ClassificationNeighborhood.neighborhood_id)
+            .join(ClassificationTypes, ClassificationTypes.classifiction_id == Classification.id)
+            .join(Types_file, Types_file.id == ClassificationTypes.type)
+            .add_columns(
+                Classification.name.label('classification_name'),
+                Neighborhood.name.label('neighborhood_name'),
+                Neighborhood.id.label('neighborhood_id'),
+                Types_file.id.label('type_id'),
+                Types_file.name.label('type_name')
+            )
+            .all()
+        )
+
+        if not classification_data:
+            return jsonify({"message": "Classification not found"}), 404
+
+        # Prepare the response data
+        response_data = {
+            'classification_id': classification_id,
+            'classification_name': classification_data[0].classification_name,
+            'neighborhoods': [],
+            'types': []
+        }
+
+        # Extract neighborhoods and types
+        for entry in classification_data:
+            neighborhood_name = entry.neighborhood_name
+            type_name = entry.type_name
+            neighborhood_id = entry.neighborhood_id
+            type_id = entry.type_id
+
+            if neighborhood_name and neighborhood_name not in response_data['neighborhoods']:
+                response_data['neighborhoods'].append([neighborhood_name, neighborhood_id])
+
+            if type_name and type_name not in response_data['types']:
+                response_data['types'].append([type_name, type_id])
+
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        return f"{e}"
 # Route to create classification
 @classification_bp.route('/Classification/Create', methods=['POST'])
 @jwt_required()
