@@ -45,3 +45,43 @@ class Neighborhoods_For_Scrapper(db.Model): # این جدول محلات رو د
     scrapper_id = db.Column(db.BigInteger, nullable=False)
     city_id = db.Column(db.BigInteger, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
+
+#-------------------------------------
+#-------------- classifications
+#-------------------------------------
+
+class Classification(db.Model): # در این جدول دسته بندی ها با نام و ... وجود دارند
+    __tablename__ = 'Classifictions'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+    neighborhoods = relationship('ClassificationNeighborhood', back_populates='classification')
+    user_access = relationship('UserAccess', back_populates='classification')
+
+class ClassificationNeighborhood(db.Model): # در این جدول محلات هر دسته بندی به اون الصاق شده است
+    __tablename__ = 'Classifictions_Neighborhoods'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    classifiction_id = db.Column(db.BigInteger, db.ForeignKey('Classifictions.id', ondelete='CASCADE'), nullable=False)
+    neighborhood_id = db.Column(db.BigInteger, db.ForeignKey('Neighborhoods.id', ondelete='CASCADE'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+    classification = relationship('Classification', back_populates='neighborhoods')
+    neighborhood = relationship('Neighborhood', back_populates='classifications')
+
+class ClassificationTypes(db.Model): # در این جدول تایپ یا انواع فایل های هر دسته بندی موجود است
+    __tablename__ = 'Classifictions_Types'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    classifiction_id = db.Column(db.BigInteger, db.ForeignKey('Classifictions.id', ondelete='CASCADE'), nullable=False)
+    type = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+class Types_file(db.Model): # این جدول انواع فایل رو ذکر کرده
+    __tablename__ = 'Types_file'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
