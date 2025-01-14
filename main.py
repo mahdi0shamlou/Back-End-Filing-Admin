@@ -10,6 +10,7 @@ from auth import auth_bp
 from user_manager import user_manger_bp
 from neighborhoods import neighborhoods_bp
 from classifications import classification_bp
+from cluster import cluster_bp
 
 config = configparser.ConfigParser()
 config.read('core/db_config.ini')
@@ -48,6 +49,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(user_manger_bp)
 app.register_blueprint(neighborhoods_bp)
 app.register_blueprint(classification_bp)
+app.register_blueprint(cluster_bp)
 
 
 @jwt.expired_token_loader
