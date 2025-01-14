@@ -5,8 +5,9 @@ from datetime import datetime
 
 
 classification_bp = Blueprint('classification', __name__)
-
-
+#-----------------------------------------------------
+# Create and list and Delete and details of Classification
+#-----------------------------------------------------
 # Route to list and search classification
 @classification_bp.route('/Classification/List', methods=['POST'])
 @jwt_required()
@@ -135,6 +136,9 @@ def classification_delete(classification_id):
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
 
+#-----------------------------------------------------
+# Add and Delete Neighborhoods of Classification
+#-----------------------------------------------------
 # Route to add neighborhoods to classification
 @classification_bp.route('/Classification/Neighborhoods/<int:classification_id>/Add', methods=['POST'])
 @jwt_required()
@@ -182,7 +186,6 @@ def classification_add_neighborhoods(classification_id):
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
 
-
 # Route to delete neighborhoods from classification
 @classification_bp.route('/Classification/Neighborhoods/<int:classification_id>/Delete', methods=['Delete'])
 @jwt_required()
@@ -220,15 +223,55 @@ def classification_delete_neighborhoods(classification_id):
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
 
-
-# Route to add neighborhoods to Type
-@classification_bp.route('/Classification/Type/Add', methods=['POST'])
+# Route to get list of neighborhoods for classification
+@classification_bp.route('/Classification/Neighborhoods/List', methods=['POST'])
 @jwt_required()
-def classification_add_type():
+def neighborhoods_list():
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        neighborhoods_list_for_res = Neighborhood.query.all()
+        neighborhoods_list_for_return = [{
+            'id': neighborhood.id,
+            'city_id': neighborhood.city_id,
+            'name': neighborhood.name,
+            'created_at': neighborhood.date_created.strftime('%Y-%m-%d %H:%M:%S')
+        } for neighborhood in neighborhoods_list_for_res]
+
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'neighborhood': neighborhoods_list_for_return
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+
+#-----------------------------------------------------
+# Add and Delete Types of Classification
+#-----------------------------------------------------
+# Route to add neighborhoods to Type
+@classification_bp.route('/Classification/Type/<int:classification_id>/Add', methods=['POST'])
+@jwt_required()
+def classification_add_type(classification_id):
     pass
 
 # Route to delete neighborhoods from Type
-@classification_bp.route('/Classification/Type/Delete', methods=['Delete'])
+@classification_bp.route('/Classification/Type/<int:classification_id>/Delete', methods=['Delete'])
 @jwt_required()
-def classification_delete_type():
+def classification_delete_type(classification_id):
     pass
