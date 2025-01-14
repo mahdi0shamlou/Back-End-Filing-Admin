@@ -182,3 +182,131 @@ def cluster_details(cluster_id):
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
+#-----------------------------------------------------
+# Create and list and Delete and details of Classification of Cluster
+#-----------------------------------------------------
+
+#-----------------------------------------------------
+# Add and Delete Classification of Clusters
+#-----------------------------------------------------
+# Route to add neighborhoods to classification
+@cluster_bp.route('/Cluster/Classifications/<int:cluster_id>/Add', methods=['POST'])
+@jwt_required()
+def clusters_add_classifications(cluster_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+        cluster = Classifictions_FOR_Factors.query.filter_by(id=cluster_id)
+        if not cluster.first():
+            return jsonify({'status': 'error', 'message': 'طبقه بندی پیدا نشد!'}), 404
+
+        request_data = request.get_json()
+        classification_id = request_data['classification_id']
+
+        classification = Classification.query.filter_by(id=classification_id)
+        if not classification.first():
+            return jsonify({'status': 'error', 'message': 'دسته بندی پیدا نشد!'}), 404
+
+        query = PER_Classifictions_FOR_Factors.query
+        query = query.filter(PER_Classifictions_FOR_Factors.Classifictions_FOR_Factors_id_created==cluster_id)
+        query = query.filter(PER_Classifictions_FOR_Factors.Classifictions_id_created==classification_id)
+
+        if not query.first():
+            new_PER_Classifictions_FOR_Factors = PER_Classifictions_FOR_Factors(
+                Classifictions_FOR_Factors_id_created=cluster_id,
+                Classifictions_id_created=classification_id
+            )
+            db.session.add(new_PER_Classifictions_FOR_Factors)
+            db.session.commit()
+            return jsonify({'status': 'okay', 'message': 'دسته بندی اضافه شد!'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'دسته بندی اضافه شده بوده است!'}), 404
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+# Route to delete neighborhoods from classification
+@cluster_bp.route('/Cluster/Classifications/<int:cluster_id>/Delete', methods=['Delete'])
+@jwt_required()
+def clusters_delete_classifications(cluster_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+
+        request_data = request.get_json()
+        classification_id = request_data['classification_id']
+
+        query = PER_Classifictions_FOR_Factors.query
+        query = query.filter(PER_Classifictions_FOR_Factors.Classifictions_FOR_Factors_id_created == cluster_id)
+        query = query.filter(PER_Classifictions_FOR_Factors.Classifictions_id_created == classification_id)
+
+
+        if not query.first():
+            return jsonify({'status': 'okay', 'message': 'دسته بندی در این طبقه بندی وجود ندارد !'}), 200
+        else:
+            db.session.delete(query.first())
+            db.session.commit()
+            return jsonify({'status': 'okay', 'message': 'دسته بندی از این طبقه بندی حذف شد!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+# Route to get list of neighborhoods for classification
+@cluster_bp.route('/Cluster/Classifications/List', methods=['POST'])
+@jwt_required()
+def classifications_list():
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        classifications_list_for_res = Classification.query.all()
+        classifications_list_for_res_return = [{
+            'id': classifications.id,
+            'name': classifications.name,
+            'created_at': classifications.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for classifications in classifications_list_for_res]
+
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'classifications': classifications_list_for_res_return
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+

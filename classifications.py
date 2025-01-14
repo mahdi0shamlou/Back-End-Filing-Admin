@@ -118,7 +118,7 @@ def classification_details(classification_id):
                 response_data['types'].append([type_name, type_id])
 
         return jsonify(response_data), 200
-    
+
     except Exception as e:
         return jsonify({
             'status': 'error',
