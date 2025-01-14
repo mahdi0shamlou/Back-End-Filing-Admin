@@ -29,6 +29,7 @@ class users(db.Model):
     email = db.Column(db.String(191), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+    user_access = relationship('UserAccess', back_populates='user', cascade='all, delete-orphan')
 
 class Neighborhood(db.Model): # این جدول محلات رو در بر دارد
     __tablename__ = 'Neighborhoods'
@@ -36,6 +37,7 @@ class Neighborhood(db.Model): # این جدول محلات رو در بر دار
     name = db.Column(db.String(191), nullable=False)
     city_id = db.Column(db.BigInteger, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
+    classifications = relationship('ClassificationNeighborhood', back_populates='neighborhood')
 
 class Neighborhoods_For_Scrapper(db.Model): # این جدول محلات رو در بر دارد
     __tablename__ = 'Neighborhoods_For_Scrapper'
@@ -46,9 +48,22 @@ class Neighborhoods_For_Scrapper(db.Model): # این جدول محلات رو د
     city_id = db.Column(db.BigInteger, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
 
+
 #-------------------------------------
 #-------------- classifications
 #-------------------------------------
+class UserAccess(db.Model): # این جدول دسترسی هر یوزر رو ست کرده
+    __tablename__ = 'User_Access'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    factor_id = db.Column(db.BigInteger, db.ForeignKey('Factors.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    classifictions_id = db.Column(db.BigInteger, db.ForeignKey('Classifictions.id', ondelete='CASCADE'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+    expired_at = db.Column(db.DateTime, nullable=False)
+
+    user = relationship('users', back_populates='user_access')  # حذف backref و استفاده از back_populates
+    classification = relationship('Classification', back_populates='user_access')
 
 class Classification(db.Model): # در این جدول دسته بندی ها با نام و ... وجود دارند
     __tablename__ = 'Classifictions'
