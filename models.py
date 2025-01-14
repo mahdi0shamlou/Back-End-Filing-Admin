@@ -100,3 +100,22 @@ class Types_file(db.Model): # این جدول انواع فایل رو ذکر ک
     name = db.Column(db.String(191), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+#-------------------------------------
+#-------------- cluster
+#-------------------------------------
+class Classifictions_FOR_Factors(db.Model): # در این جدول طبقه بندی های دسته بندی ها وجود دارند با نام و قیمت
+    __tablename__ = 'Classifictions_FOR_Factors'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    price = db.Column(db.BigInteger, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+class PER_Classifictions_FOR_Factors(db.Model): # در این جدول به هر طبقه بندی دسته بندی های جدا الصاق شده اند
+    __tablename__ = 'PER_Classifictions_FOR_Factors'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    Classifictions_id_created = db.Column(db.BigInteger, nullable=False) # classification id
+    Classifictions_FOR_Factors_id_created = db.Column(db.BigInteger, nullable=False) # cluster id
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
