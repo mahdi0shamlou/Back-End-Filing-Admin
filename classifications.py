@@ -118,9 +118,12 @@ def classification_details(classification_id):
                 response_data['types'].append([type_name, type_id])
 
         return jsonify(response_data), 200
-
+    
     except Exception as e:
-        return f"{e}"
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
 # Route to create classification
 @classification_bp.route('/Classification/Create', methods=['POST'])
 @jwt_required()

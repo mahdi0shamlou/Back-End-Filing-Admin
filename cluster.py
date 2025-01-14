@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Classifictions_FOR_Factors, users_admin
+from models import db, Classifictions_FOR_Factors, users_admin, PER_Classifictions_FOR_Factors, Classification
 from datetime import datetime
 
 
@@ -142,4 +142,43 @@ def cluster_delete(cluster_id):
 @cluster_bp.route('/Cluster/Details/<int:cluster_id>', methods=['POST'])
 @jwt_required()
 def cluster_details(cluster_id):
-    pass
+    try:
+        cluster_data = (
+            db.session.query(Classifictions_FOR_Factors)
+            .filter(Classifictions_FOR_Factors.id == cluster_id)
+            .join(PER_Classifictions_FOR_Factors, PER_Classifictions_FOR_Factors.Classifictions_FOR_Factors_id_created == Classifictions_FOR_Factors.id)
+            .join(Classification, Classification.id == PER_Classifictions_FOR_Factors.Classifictions_id_created)
+            .add_columns(
+                Classification.name.label('classification_name'),
+                Classification.id.label('classification_id'),
+                Classifictions_FOR_Factors.name.label('cluster_name'),
+                Classifictions_FOR_Factors.price.label('cluster_price'),
+            )
+            .all()
+        )
+
+        if not cluster_data:
+            return jsonify({"message": "cluster not found"}), 404
+
+        # Prepare the response data
+        response_data = {
+            'cluster': cluster_id,
+            'cluster_name': cluster_data[0].cluster_name,
+            'cluster_price': cluster_data[0].cluster_price,
+            'classifications': []
+        }
+
+        # Extract neighborhoods and types
+        for entry in cluster_data:
+            classification_name = entry.classification_name
+            classification_id = entry.classification_id
+            if classification_name and classification_name not in response_data['classifications']:
+                response_data['classifications'].append([classification_name, classification_id])
+
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
