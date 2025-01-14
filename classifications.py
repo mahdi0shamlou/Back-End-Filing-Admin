@@ -184,10 +184,41 @@ def classification_add_neighborhoods(classification_id):
 
 
 # Route to delete neighborhoods from classification
-@classification_bp.route('/Classification/Neighborhoods/Delete', methods=['Delete'])
+@classification_bp.route('/Classification/Neighborhoods/<int:classification_id>/Delete', methods=['Delete'])
 @jwt_required()
-def classification_delete_neighborhoods():
-    pass
+def classification_delete_neighborhoods(classification_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+
+        request_data = request.get_json()
+        neighborhood_id = request_data['neighborhood_id']
+
+        query = ClassificationNeighborhood.query
+        query = query.filter(ClassificationNeighborhood.classifiction_id == classification_id)
+        query = query.filter(ClassificationNeighborhood.neighborhood_id == neighborhood_id)
+
+        if not query.first():
+            return jsonify({'status': 'okay', 'message': 'محله در این دسته بندی وجود ندارد !'}), 200
+        else:
+            db.session.delete(query.first())
+            db.session.commit()
+            return jsonify({'status': 'okay', 'message': 'محله از این دسته بندی حذف شد!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
 
 
 # Route to add neighborhoods to Type
