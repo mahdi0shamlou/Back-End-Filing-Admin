@@ -77,13 +77,65 @@ def classification_list():
 @classification_bp.route('/Classification/Add', methods=['POST'])
 @jwt_required()
 def classification_create():
-    pass
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        request_data = request.get_json()
+
+        new_user = Classification(
+            name=request_data['name'],
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'دسته بندیس جدید با موفقیت اضافه شد!'}), 201
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
 
 # Route to delete classification
-@classification_bp.route('/Classification/Delete', methods=['Delete'])
+@classification_bp.route('/Classification/Delete/<int:classification_id>', methods=['Delete'])
 @jwt_required()
-def classification_delete():
-    pass
+def classification_delete(classification_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        classification = Classification.query.get(classification_id)
+
+        if not classification:
+            return jsonify({'status': 'error', 'message': 'دسته بندی پیدا نشد!'}), 404
+
+        db.session.delete(classification)
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'دسته بندی با موفقیت حذف شد!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
 
 # Route to add neighborhoods to classification
 @classification_bp.route('/Classification/Neighborhoods/Add', methods=['POST'])
