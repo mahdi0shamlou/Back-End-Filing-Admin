@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Classification, ClassificationTypes, ClassificationNeighborhood, users_admin, Neighborhood
+from models import db, Classification, ClassificationTypes, ClassificationNeighborhood, users_admin, Neighborhood, Types_file
 from datetime import datetime
 
 
@@ -268,10 +268,117 @@ def neighborhoods_list():
 @classification_bp.route('/Classification/Type/<int:classification_id>/Add', methods=['POST'])
 @jwt_required()
 def classification_add_type(classification_id):
-    pass
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+        classification = Classification.query.filter_by(id=classification_id)
+        if not classification.first():
+            return jsonify({'status': 'error', 'message': 'دسته بندی پیدا نشد!'}), 404
+
+        request_data = request.get_json()
+        types_id = request_data['types_id']
+
+        neighborhood = Types_file.query.filter_by(id=types_id)
+        if not neighborhood.first():
+            return jsonify({'status': 'error', 'message': 'نوع فایل پیدا نشد!'}), 404
+
+        query = ClassificationTypes.query
+        query = query.filter(ClassificationTypes.classifiction_id == classification_id)
+        query = query.filter(ClassificationTypes.type == types_id)
+
+        if not query.first():
+            new_ClassificationTypes = ClassificationTypes(
+                classifiction_id=classification_id,
+                type=types_id
+            )
+            db.session.add(new_ClassificationTypes)
+            db.session.commit()
+            return jsonify({'status': 'okay', 'message': 'نوع فایل اضافه شد!'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'نوع فایل تکراری است!'}), 404
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
 
 # Route to delete neighborhoods from Type
 @classification_bp.route('/Classification/Type/<int:classification_id>/Delete', methods=['Delete'])
 @jwt_required()
 def classification_delete_type(classification_id):
-    pass
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        request_data = request.get_json()
+        types_id = request_data['types_id']
+
+        query = ClassificationTypes.query
+        query = query.filter(ClassificationTypes.classifiction_id == classification_id)
+        query = query.filter(ClassificationTypes.type == types_id)
+
+        if not query.first():
+            return jsonify({'status': 'okay', 'message': 'نوع فایل در این دسته بندی وجود ندارد !'}), 200
+        else:
+            db.session.delete(query.first())
+            db.session.commit()
+            return jsonify({'status': 'okay', 'message': 'نوع فایل از این دسته بندی حذف شد!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+# Route to get list of neighborhoods for classification
+@classification_bp.route('/Classification/Type/List', methods=['POST'])
+@jwt_required()
+def Type_list():
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        Types_file_list_for_res = Types_file.query.all()
+        Types_file_list_for_res_return = [{
+            'id': types.id,
+            'name': types.name,
+            'created_at': types.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        } for types in Types_file_list_for_res]
+
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'types': Types_file_list_for_res_return
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
