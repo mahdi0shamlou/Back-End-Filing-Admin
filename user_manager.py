@@ -341,8 +341,8 @@ def UserManager_Admin_Edit(user_id):
         user.phone = request_data.get('phone', user.phone)
         user.address = request_data.get('address', user.address)
         user.email = request_data.get('email', user.email)
-        user.email = request_data.get('type', user.type)
-        user.email = request_data.get('status', user.status)
+        user.type = request_data.get('type', user.type)
+        user.status = request_data.get('status', user.status)
 
         db.session.commit()
 
