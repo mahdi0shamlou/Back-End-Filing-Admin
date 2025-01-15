@@ -4,7 +4,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import TINYINT
 
 db = SQLAlchemy()
-
+#-------------------------------------
+#-------------- normall users and admin users
+#-------------------------------------
 class users_admin(db.Model):
     __tablename__ = 'users_admin'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
@@ -31,7 +33,9 @@ class users(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
     user_access = relationship('UserAccess', back_populates='user', cascade='all, delete-orphan')
-
+#-------------------------------------
+#-------------- neighborhood
+#-------------------------------------
 class Neighborhood(db.Model): # این جدول محلات رو در بر دارد
     __tablename__ = 'Neighborhoods'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
@@ -48,24 +52,9 @@ class Neighborhoods_For_Scrapper(db.Model): # این جدول محلات رو د
     scrapper_id = db.Column(db.BigInteger, nullable=False)
     city_id = db.Column(db.BigInteger, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
-
-
 #-------------------------------------
 #-------------- classifications
 #-------------------------------------
-class UserAccess(db.Model): # این جدول دسترسی هر یوزر رو ست کرده
-    __tablename__ = 'User_Access'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    factor_id = db.Column(db.BigInteger, db.ForeignKey('Factors.id', ondelete='CASCADE'), nullable=False)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-    classifictions_id = db.Column(db.BigInteger, db.ForeignKey('Classifictions.id', ondelete='CASCADE'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now())
-    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
-    expired_at = db.Column(db.DateTime, nullable=False)
-
-    user = relationship('users', back_populates='user_access')  # حذف backref و استفاده از back_populates
-    classification = relationship('Classification', back_populates='user_access')
-
 class Classification(db.Model): # در این جدول دسته بندی ها با نام و ... وجود دارند
     __tablename__ = 'Classifictions'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
@@ -101,7 +90,6 @@ class Types_file(db.Model): # این جدول انواع فایل رو ذکر ک
     name = db.Column(db.String(191), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
-
 #-------------------------------------
 #-------------- cluster
 #-------------------------------------
@@ -120,7 +108,6 @@ class PER_Classifictions_FOR_Factors(db.Model): # در این جدول به هر
     Classifictions_FOR_Factors_id_created = db.Column(db.BigInteger, nullable=False) # cluster id
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
-
 #-------------------------------------
 #-------------- Files
 #-------------------------------------
@@ -162,4 +149,50 @@ class Posts(db.Model):
     # date
     date_created_persian = db.Column(db.String(20))
     date_created = db.Column(db.DateTime, default= datetime.now())  # Use datetime.utcnow for default value
-    
+#-------------------------------------
+#-------------- Factor and User accsess
+#-------------------------------------
+class UserAccess(db.Model): # این جدول دسترسی هر یوزر رو ست کرده
+    __tablename__ = 'User_Access'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    factor_id = db.Column(db.BigInteger, db.ForeignKey('Factors.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    classifictions_id = db.Column(db.BigInteger, db.ForeignKey('Classifictions.id', ondelete='CASCADE'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+    expired_at = db.Column(db.DateTime, nullable=False)
+
+    user = relationship('users', back_populates='user_access')  # حذف backref و استفاده از back_populates
+    classification = relationship('Classification', back_populates='user_access')
+
+class Factor(db.Model): # این جدول فاکتور ها است
+    __tablename__ = 'Factors'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    status = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.Integer, nullable=False)
+    number = db.Column(db.Integer, nullable=False, default=1)
+    price = db.Column(db.BigInteger, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    expired_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+class FactorAccess(db.Model): # این جدول دسترسی هر فاکتور به طبقه بندی هاست
+    __tablename__ = 'Factor_Access'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    factor_id = db.Column(db.BigInteger, db.ForeignKey('Factors.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    classifictions_for_factors_id = db.Column(db.BigInteger, db.ForeignKey('Classifictions_FOR_Factors.id', ondelete='CASCADE'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    expired_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+class Users_in_Factors_Acsess(db.Model): # این جدول یوزر های دارای دسترسی به هر طبقه بندی از هر فاکتور رو نشان میدهد
+    __tablename__ = 'Users_in_Factors_Acsess'
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    Classifictions_id = db.Column(db.BigInteger, nullable=False)
+    factor_id = db.Column(db.BigInteger, db.ForeignKey('Factors.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    expired_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.now())
