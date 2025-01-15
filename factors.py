@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, users_admin, Factor, users, UserAccess, Users_in_Factors_Acsess, FactorAccess
+from models import db, users_admin, Factor, users, UserAccess, Users_in_Factors_Acsess, FactorAccess, Classifictions_FOR_Factors
 from datetime import datetime
 
 
@@ -78,3 +78,22 @@ def factor_list():
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
+
+@factors_bp.route('/Factors/Cluster', methods=['GET'])
+@jwt_required()
+def get_factors_cluster():
+    try:
+        factors = Classifictions_FOR_Factors.query.all()
+
+        factors_list = [{
+            "id": factor.id,
+            "price": factor.price,
+            "name": factor.name,
+            "created_at": factor.created_at.isoformat()
+        } for factor in factors]
+
+        return jsonify({"factors": factors_list}), 200
+
+    except Exception as e:
+        print(str(e))  # برای دیباگ
+        return jsonify({"message": "خطا در دریافت قیمت"}), 500
