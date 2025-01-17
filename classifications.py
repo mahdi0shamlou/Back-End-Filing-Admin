@@ -53,6 +53,7 @@ def classification_list():
         classification_list = [{
             'id': classification.id,
             'name': classification.name,
+            'types': classification.types,
             'created_at': classification.created_at.strftime('%Y-%m-%d %H:%M:%S')
         } for classification in pagination.items]
 
@@ -144,6 +145,7 @@ def classification_create():
 
         new_user = Classification(
             name=request_data['name'],
+            types=request_data['types']
         )
         db.session.add(new_user)
         db.session.commit()
