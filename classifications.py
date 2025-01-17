@@ -190,6 +190,39 @@ def classification_delete(classification_id):
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
 
+@classification_bp.route('/Classification/Edit/<int:classification_id>', methods=['PUT'])
+@jwt_required()
+def classification_edit(classification_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        classification = Classification.query.get(classification_id)
+
+        if not classification:
+            return jsonify({'status': 'error', 'message': 'دسته بندی پیدا نشد!'}), 404
+        request_data = request.get_json()
+        classification.name = request_data['name']
+        classification.types = request_data['types']
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'دسته بندی با موفقیت تغییر یافت!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+
 #-----------------------------------------------------
 # Add and Delete Neighborhoods of Classification
 #-----------------------------------------------------
