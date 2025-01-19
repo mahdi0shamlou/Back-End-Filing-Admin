@@ -106,12 +106,13 @@ def classification_details(classification_id):
         }
 
         # Extract neighborhoods and types
+        list_etenrty = []
         for entry in classification_data:
             neighborhood_name = entry.neighborhood_name
             type_name = entry.type_name
             neighborhood_id = entry.neighborhood_id
             type_id = entry.type_id
-            list_etenrty = []
+
 
             if neighborhood_name and neighborhood_id not in list_etenrty:
                 list_etenrty.append(neighborhood_id)
