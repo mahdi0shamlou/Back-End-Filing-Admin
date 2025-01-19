@@ -111,11 +111,14 @@ def classification_details(classification_id):
             type_name = entry.type_name
             neighborhood_id = entry.neighborhood_id
             type_id = entry.type_id
+            list_etenrty = []
 
-            if neighborhood_name and neighborhood_name not in response_data['neighborhoods']:
+            if neighborhood_name and neighborhood_id not in list_etenrty:
+                list_etenrty.append(neighborhood_id)
                 response_data['neighborhoods'].append([neighborhood_name, neighborhood_id])
 
-            if type_name and type_name not in response_data['types']:
+            if type_name and type_id not in list_etenrty:
+                list_etenrty.append(type_id)
                 response_data['types'].append([type_name, type_id])
 
         return jsonify(response_data), 200
