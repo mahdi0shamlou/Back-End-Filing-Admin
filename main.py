@@ -12,6 +12,7 @@ from neighborhoods import neighborhoods_bp
 from classifications import classification_bp
 from cluster import cluster_bp
 from factors import factors_bp
+from files import files_bp
 
 
 config = configparser.ConfigParser()
@@ -53,6 +54,7 @@ app.register_blueprint(neighborhoods_bp)
 app.register_blueprint(classification_bp)
 app.register_blueprint(cluster_bp)
 app.register_blueprint(factors_bp)
+app.register_blueprint(files_bp)
 
 
 @jwt.expired_token_loader
