@@ -66,8 +66,9 @@ def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_t
         auth_plugin='mysql_native_password'
     )
 
-    param = (0, "token2", 1, -12, city_id, city_text, mahal_id, mahal_text, type_id, type_text, "title", 1000, 1000, 10)
+    param = (0, details[21][19:], 1, -12, city_id, city_text, mahal_id, mahal_text, type_id, type_text, details[1], int(details[17]), int(details[18]), details[10])
     query = f"""INSERT INTO Posts (is_active, token, status, `number`, city, city_text, mahal, mahal_text, `type`, type_text, title, price, price_two, meter) VALUES{param};"""
+    print(query)
     cursor = connection.cursor()
     print(cursor.execute(query))
     connection.commit()
@@ -75,14 +76,14 @@ def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_t
 
 if __name__ == "__main__":
 
-    for i in range(1_000_000, 1000, -1):
+    for i in range(1_000_000, 999_998, -1):
         print("------------------------------------------")
         print("section get file from arka")
         print("------------------------------------------")
 
         details = get_details_from_arkafile(i)
-        for i in details:
-            print(i)
+        for i in range(0, len(details)):
+            print(f" {details[i]} --- {i}")
 
         print("------------------------------------------")
         print("section get mahal id and text")
@@ -114,5 +115,5 @@ if __name__ == "__main__":
         print("------------------------------------------")
         data_for_insert = insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_text)
 
-        break
+
 
