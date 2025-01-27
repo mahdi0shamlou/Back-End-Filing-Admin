@@ -23,6 +23,7 @@ def get_mahal_id(mahal_text):
         #print(mahal_text_ret)
         return mahal_id, mahal_text_ret, city_id
 
+
 def get_type_id(text):
     if "مسکونی" in text:
         if "فروش" in text:
@@ -34,6 +35,7 @@ def get_type_id(text):
             return 31, "فروش دفتر"
         elif "اجاره" in text:
             return 41, "اجاره دفتر"
+
 
 def get_city_id(city_id):
     if city_id == 1:
@@ -64,6 +66,7 @@ def get_details_from_arkafile(id: int):
         rows = mysql_cursor.fetchall()
         #print(rows[0])
     return rows[0]
+
 
 def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_text):
     connection = mysql.connector.connect(
@@ -130,6 +133,3 @@ if __name__ == "__main__":
         except Exception as e:
 
             print(f"index {i} failed")
-
-
-
