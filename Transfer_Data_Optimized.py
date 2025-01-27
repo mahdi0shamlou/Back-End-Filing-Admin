@@ -1,5 +1,6 @@
 import asyncio
 import aiomysql
+import time
 
 
 async def get_mahal_id(mahal_text):
@@ -79,31 +80,55 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
     ) as connection:
         async with connection.cursor() as cursor:
             if details[17] == 0 and details[18] == 0:
-                param = (0, details[21][19:], 1, -12, city_id, city_text, mahal_id, details[9], type_id, type_text, details[1], int(details[19]), int(details[20]), details[10])
+                param = (
+                0, details[21][19:], 1, -12, city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
+                int(details[19]), int(details[20]), details[10])
             else:
-                param = (0, details[21][19:], 1, -12, city_id, city_text, mahal_id, details[9], type_id, type_text, details[1], int(details[17]), int(details[18]), details[10])
+                param = (
+                0, details[21][19:], 1, -12, city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
+                int(details[17]), int(details[18]), details[10])
 
             query = f"""INSERT INTO Posts (is_active, token, status, `number`, city,
                        city_text, mahal, mahal_text, `type`, type_text,
                        title, price, price_two, meter) VALUES {param};"""
-            print(query)
             await cursor.execute(query)
 
+
 async def main():
+    success_count = 0
+    failure_count = 0
+    errors = []
+
+    start_time = time.time()  # Start timing
+
     tasks = []
-    for i in range(1_990_000, 1_989_900, -1):
+    for i in range(1_980_000, 1_979_900, -1):
         tasks.append(process_index(i))
 
     # Await all tasks concurrently
-    print(tasks)
-    await asyncio.gather(*tasks)
+    results = await asyncio.gather(*tasks)
+
+    for result in results:
+        if result is True:
+            success_count += 1
+        else:
+            failure_count += 1
+            errors.append(result)
+
+    end_time = time.time()  # End timing
+
+    print(f"Total Successes: {success_count}")
+    print(f"Total Failures: {failure_count}")
+    print(f"Errors: {errors}")
+    print(f"Total Time Taken: {end_time - start_time:.2f} seconds")
+
 
 async def process_index(i):
     try:
         details = await get_details_from_arkafile(i)
         if not details:
             print(f"index {i} no details found")
-            return
+            return False
 
         mahal_text = details[9]
         mahal_id, mahal_text_ret, city_id = await get_mahal_id(mahal_text)
@@ -116,8 +141,13 @@ async def process_index(i):
         await insert_data_to_server(details, mahal_id, type_id, type_text_ret, city_id, city_text)
         print(f"index {i} succeeded")
 
+        return True
+
     except Exception as e:
-        print(f"index {i} failed: {e}")
+        error_message = f"index {i} failed: {e}"
+        print(error_message)
+        return error_message
+
 
 if __name__ == "__main__":
     asyncio.run(main())
