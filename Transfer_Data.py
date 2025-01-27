@@ -25,14 +25,14 @@ def get_mahal_id(mahal_text):
 def get_type_id(text):
     if "مسکونی" in text:
         if "فروش" in text:
-            return 11, "فروش آپارتمان مسکونی"
+            return 11, "فروش آپارتمان"
         elif "اجاره" in text:
-            return 21, "اجاره آپارتمان مسکونی"
+            return 21, "اجاره آپارتمان"
     elif "اداری" in text:
         if "فروش" in text:
-            return 31, "فروش اداری و تجاری دفتر کار و مطب"
+            return 31, "فروش دفتر"
         elif "اجاره" in text:
-            return 41, "اجاره اداری و تجاری دفتر کار و مطب"
+            return 41, "اجاره دفتر"
 
 def get_city_id(text):
     if "کرج" in text:
