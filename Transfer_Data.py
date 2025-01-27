@@ -30,10 +30,15 @@ def get_type_id(text):
             return 21, "اجاره آپارتمان مسکونی"
     elif "اداری" in text:
         if "فروش" in text:
-            return 31, "فروش آپارتمان اداری"
+            return 31, "فروش اداری و تجاری دفتر کار و مطب"
         elif "اجاره" in text:
-            return 41, "اجاره آپارتمان اداری"
+            return 41, "اجاره اداری و تجاری دفتر کار و مطب"
 
+def get_city_id(text):
+    if "کرج" in text:
+       return 2, "کرج"
+    else:
+        return 1, "تهران"
 
 
 def get_details_from_arkafile(id: int):
@@ -51,7 +56,7 @@ def get_details_from_arkafile(id: int):
         print(rows[0])
     return rows[0]
 
-def insert_data_to_server(details, mahal_id, type_id, type_text):
+def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_text):
     connection = mysql.connector.connect(
         host='5.34.195.27',
         user='root',
@@ -61,7 +66,7 @@ def insert_data_to_server(details, mahal_id, type_id, type_text):
         auth_plugin='mysql_native_password'
     )
 
-    param = (0, "token", 1, -12, 1, "tehran", mahal_id, "piroozi", 11, "sell", "title", 1000, 1000, 10)
+    param = (0, "token2", 1, -12, city_id, city_text, mahal_id, mahal_text, type_id, type_text, "title", 1000, 1000, 10)
     query = f"""INSERT INTO Posts (is_active, token, status, `number`, city, city_text, mahal, mahal_text, `type`, type_text, title, price, price_two, meter) VALUES{param};"""
     cursor = connection.cursor()
     print(cursor.execute(query))
@@ -94,10 +99,20 @@ if __name__ == "__main__":
         type_id, type_text = get_type_id(type_text)
         print(type_text)
         print(type_id)
+
+
+        print("------------------------------------------")
+        print("section get city id and text")
+        print("------------------------------------------")
+        city_text = details[-13]
+        city_id, city_text = get_city_id(city_text)
+        print(city_text)
+        print(city_id)
+
         print("------------------------------------------")
         print("section save data")
         print("------------------------------------------")
-        data_for_insert = insert_data_to_server(details, mahal_id, type_id, type_text)
+        data_for_insert = insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_text)
 
         break
 
