@@ -8,7 +8,6 @@ cluster_bp = Blueprint('cluster', __name__)
 #-----------------------------------------------------
 # Create and list and Delete and details of Cluster
 #-----------------------------------------------------
-# Route to list and search Cluster
 @cluster_bp.route('/Cluster/List', methods=['POST'])
 @jwt_required()
 def cluster_list():
@@ -31,6 +30,8 @@ def cluster_list():
         # دریافت پارامترهای جستجو
         search_name = request_data.get('name', None)
         search_created_at = request_data.get('created_at', None)  # تاریخ ثبت نام
+        search_price_min = request_data.get('price_min', None)  # Minimum price
+        search_price_max = request_data.get('price_max', None)  # Maximum price
 
         # ساخت کوئری پایه
         query = Classifictions_FOR_Factors.query
@@ -42,6 +43,14 @@ def cluster_list():
         if search_created_at:
             created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
             query = query.filter(Classifictions_FOR_Factors.created_at >= created_at_date)
+
+        # New filtering for price range
+        if search_price_min is not None and search_price_max is not None:
+            query = query.filter(Classifictions_FOR_Factors.price.between(search_price_min, search_price_max))
+        elif search_price_min is not None:
+            query = query.filter(Classifictions_FOR_Factors.price >= search_price_min)
+        elif search_price_max is not None:
+            query = query.filter(Classifictions_FOR_Factors.price <= search_price_max)
 
         # انجام pagination
         pagination = query.paginate(
