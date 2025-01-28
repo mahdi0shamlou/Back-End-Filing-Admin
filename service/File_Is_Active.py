@@ -18,7 +18,7 @@ class GetActiveFile:
             port=3306,
         )
         async with connection.cursor() as cursor:
-            await cursor.execute('SELECT id, token FROM Posts WHERE is_active = 1 LIMIT 1000')
+            await cursor.execute('SELECT id, token FROM Posts WHERE is_active = 1 LIMIT 10')
             rows = await cursor.fetchall()
             logging.info(f"Fetched {len(rows)} active files from the database.")
             return rows
