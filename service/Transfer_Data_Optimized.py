@@ -81,11 +81,11 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
         async with connection.cursor() as cursor:
             if details[17] == 0 and details[18] == 0:
                 param = (
-                0, details[21][19:], 1, -12, city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
+                0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
                 int(details[19]), int(details[20]), details[10])
             else:
                 param = (
-                0, details[21][19:], 1, -12, city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
+                0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
                 int(details[17]), int(details[18]), details[10])
 
             query = f"""INSERT INTO Posts (is_active, token, status, `number`, city,
@@ -94,7 +94,7 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
             await cursor.execute(query)
 
 
-async def main():
+async def main(start, end):
     success_count = 0
     failure_count = 0
     errors = []
@@ -102,7 +102,7 @@ async def main():
     start_time = time.time()  # Start timing
 
     tasks = []
-    for i in range(1_980_000, 1_979_900, -1):
+    for i in range(start, end, -1):
         tasks.append(process_index(i))
 
     # Await all tasks concurrently
@@ -150,4 +150,5 @@ async def process_index(i):
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    for i in range(15000, 1992541, 100):
+        asyncio.run(main(i+100, i))
