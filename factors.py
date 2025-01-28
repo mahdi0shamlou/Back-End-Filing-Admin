@@ -37,20 +37,41 @@ def factor_list():
         page = request_data.get('page', 1)
         per_page = request_data.get('perpage', 10)
 
+        # دریافت پارامترهای جستجو
         search_created_at = request_data.get('created_at', None)  # تاریخ ایجاد
         search_expired_at = request_data.get('expired_at', None)  # تاریخ انقضا
-
+        search_price_min = request_data.get('price_min', None)  # حداقل قیمت
+        search_price_max = request_data.get('price_max', None)  # حداکثر قیمت
+        search_user_id = request_data.get('user_id', None)  # شناسه کاربر
+        search_number = request_data.get('number', None)  # شماره فاکتور
+        search_status = request_data.get('status', None)  # وضعیت فاکتور
 
         # ساخت کوئری پایه
         query = Factor.query.join(users, users.id == Factor.user_id).add_columns(users)
 
+        # اضافه کردن فیلترها بر اساس پارامترهای جستجو
         if search_created_at:
             created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
             query = query.filter(Factor.created_at >= created_at_date)
+
         if search_expired_at:
             expired_at_date = datetime.strptime(search_expired_at, '%Y-%m-%d')
             query = query.filter(Factor.expired_at >= expired_at_date)
 
+        if search_price_min is not None:
+            query = query.filter(Factor.price >= search_price_min)
+
+        if search_price_max is not None:
+            query = query.filter(Factor.price <= search_price_max)
+
+        if search_user_id is not None:
+            query = query.filter(Factor.user_id == search_user_id)
+
+        if search_number is not None:
+            query = query.filter(Factor.number == search_number)
+
+        if search_status is not None:
+            query = query.filter(Factor.status == search_status)
 
         # انجام pagination
         pagination = query.paginate(
@@ -58,7 +79,6 @@ def factor_list():
             per_page=per_page,
             error_out=False
         )
-        print(query.all()[0])
 
         factors_list = [{
             'id': factor.id,
@@ -82,11 +102,13 @@ def factor_list():
                 'current_page': page
             }
         }), 200
+
     except Exception as e:
         return jsonify({
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
+
 
 # Route to list cluster for create factors
 @factors_bp.route('/Factor/Cluster', methods=['GET'])
