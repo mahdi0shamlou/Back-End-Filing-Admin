@@ -13,6 +13,7 @@ from classifications import classification_bp
 from cluster import cluster_bp
 from factors import factors_bp
 from files import files_bp
+from factor_price_data import factors_price_system_bp
 
 
 config = configparser.ConfigParser()
@@ -55,6 +56,7 @@ app.register_blueprint(classification_bp)
 app.register_blueprint(cluster_bp)
 app.register_blueprint(factors_bp)
 app.register_blueprint(files_bp)
+app.register_blueprint(factors_price_system_bp)
 
 
 @jwt.expired_token_loader
