@@ -197,3 +197,22 @@ class Users_in_Factors_Acsess(db.Model): # این جدول یوزر های دا�
     created_at = db.Column(db.DateTime, default=datetime.now())
     expired_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
+
+#------------------------------
+#---------- require for price
+#------------------------------
+class NumberProfitForFactor(db.Model):
+    __tablename__ = 'Number_Profit_For_Factor'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    number_person = db.Column(db.Integer, nullable=False)
+    profit = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+class DaysProfitForFactor(db.Model):
+    __tablename__ = 'Days_Profit_For_Factor'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    days = db.Column(db.Integer, nullable=False)
+    profit = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)

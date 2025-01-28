@@ -8,7 +8,8 @@ def Get_price(data):
     factor_type = data.get('type')
     number = data.get('number', 1)
     classifications_for_factors = data.get('classifications_for_factors', [])
-    time_delta = data.get('time_delta', 30)
+    
+    time_delta = data.get('timetime_deltatime_deltatime_deltatime_delta_delta', 30)
 
     price = 1000
     return price
