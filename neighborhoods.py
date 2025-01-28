@@ -122,11 +122,47 @@ def add_neighborhood():
 @neighborhoods_bp.route('/Scrapper/Neighborhoods/List', methods=['POST'])
 @jwt_required()
 def scrapper_neighborhoods_list():
-    request_data = request.get_json()
-    name = request_data.get('name', 1)
-    neighborhoods = Neighborhoods_For_Scrapper.query.filter(Neighborhoods_For_Scrapper.name.ilike(f'%{name}%')).all()
-    return jsonify([{"id": n.id, "name_in_divar": n.name, "neighborhoods_id_in_arka": n.neighborhoods_id, "city_id": n.city_id, "date_created": n.date_created} for n in
-                    neighborhoods]), 200
+    try:
+        request_data = request.get_json()
+        name = request_data.get('name')
+        date_created = request_data.get('date_created')  # Expecting a date string
+        city_id = request_data.get('city_id')
+
+        # Initialize the query
+        query = Neighborhoods_For_Scrapper.query
+
+        # Check if 'name' is provided and is a valid string
+        if isinstance(name, str):
+            query = query.filter(Neighborhoods_For_Scrapper.name.ilike(f'%{name}%'))
+
+        # Check if 'date_created' is provided and is a valid date string
+        if date_created:
+            try:
+                # Convert the date string to a datetime object
+                date_created_obj = datetime.fromisoformat(date_created)
+                query = query.filter(Neighborhoods_For_Scrapper.date_created >= date_created_obj)
+            except ValueError:
+                return jsonify({'error': 'Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)'}), 400
+
+        # Check if 'city_id' is provided and is a valid integer
+        if city_id is not None:
+            if isinstance(city_id, int):
+                query = query.filter(Neighborhoods_For_Scrapper.city_id == city_id)
+            else:
+                return jsonify({'error': 'city_id must be an integer'}), 400
+
+        # Execute the query
+        neighborhoods = query.all()
+
+        # Prepare and return the response
+        return jsonify([{"id": n.id, "name_in_divar": n.name, "neighborhoods_id_in_arka": n.neighborhoods_id,
+                         "city_id": n.city_id, "date_created": n.date_created} for n in
+                        neighborhoods]), 200
+
+    except Exception as e:
+        print(e)  # Log the error for debugging purposes
+        return jsonify({'error': 'An error occurred while fetching neighborhoods', 'message': str(e)}), 500
+
 
 @neighborhoods_bp.route('/Scrapper/Neighborhoods', methods=['POST'])
 @jwt_required()
