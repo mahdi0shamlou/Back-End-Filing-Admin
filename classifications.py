@@ -31,6 +31,7 @@ def classification_list():
         # دریافت پارامترهای جستجو
         search_name = request_data.get('name', None)
         search_created_at = request_data.get('created_at', None)  # تاریخ ثبت نام
+        search_types = request_data.get('types', None)  # Types filter (should be 1 or 2)
 
         # ساخت کوئری پایه
         query = Classification.query
@@ -42,6 +43,10 @@ def classification_list():
         if search_created_at:
             created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
             query = query.filter(Classification.created_at >= created_at_date)
+
+        # New filtering for specific types (1 or 2)
+        if search_types in [1, 2]:  # Check if types is either 1 or 2
+            query = query.filter(Classification.types == search_types)
 
         # انجام pagination
         pagination = query.paginate(
