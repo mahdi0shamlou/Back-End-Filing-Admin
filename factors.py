@@ -1,18 +1,34 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, users_admin, Factor, users, UserAccess, PER_Classifictions_FOR_Factors, Users_in_Factors_Acsess, FactorAccess, Classifictions_FOR_Factors
+from models import db, users_admin, Factor, users, UserAccess, PER_Classifictions_FOR_Factors, Users_in_Factors_Acsess, FactorAccess, Classifictions_FOR_Factors, DaysProfitForFactor, NumberProfitForFactor
 from datetime import datetime, timedelta
 
 
 def Get_price(data):
-    factor_type = data.get('type')
-    number = data.get('number', 1)
+    # Retrieve the list of classification IDs from the input data
     classifications_for_factors = data.get('classifications_for_factors', [])
-    
+    number = data.get('number', 1)
     time_delta = data.get('timetime_deltatime_deltatime_deltatime_delta_delta', 30)
 
-    price = 1000
-    return price
+
+    # Query to get the distinct classifications for factors based on provided IDs
+    classifications = (db.session.query(Classifictions_FOR_Factors)
+                       .filter(Classifictions_FOR_Factors.id.in_(classifications_for_factors))
+                       .distinct()
+                       .all())
+
+    # Calculate the total price by summing up the prices of the retrieved classifications
+    total_price = sum(classification.price for classification in classifications)
+
+    days_profit = DaysProfitForFactor.query.filter_by(days = time_delta).first().profit
+    number_profit = NumberProfitForFactor.query.filter_by(number_person = number).first().profit
+    days_profit = (days_profit + 100)/100
+    number_profit = (number_profit + 100) / 100
+
+    total_price = total_price * (number_profit*days_profit)
+    print(total_price)
+    return total_price
+
 
 factors_bp = Blueprint('factors', __name__)
 #-----------------------------------------------------
