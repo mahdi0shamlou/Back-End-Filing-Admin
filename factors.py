@@ -90,6 +90,9 @@ def factor_list():
         if search_status is not None:
             query = query.filter(Factor.status == search_status)
 
+        # Add ordering by id in descending order
+        query = query.order_by(Factor.id.desc())
+        
         # انجام pagination
         pagination = query.paginate(
             page=page,
