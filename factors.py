@@ -92,7 +92,7 @@ def factor_list():
 
         # Add ordering by id in descending order
         query = query.order_by(Factor.id.desc())
-        
+
         # انجام pagination
         pagination = query.paginate(
             page=page,
