@@ -241,7 +241,7 @@ def delete_factor(factor_id):
         print(str(e))  # برای دیباگ
         return jsonify({"message": "خطا در حذف فاکتور"}), 500
 
-@factors_bp.route('/Factor/Did/<int:factor_id>', methods=['GET'])
+@factors_bp.route('/Factor/Do/<int:factor_id>', methods=['GET'])
 @jwt_required()
 def did_factors(factor_id):
     try:
