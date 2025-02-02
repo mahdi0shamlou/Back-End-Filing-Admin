@@ -474,14 +474,21 @@ def UserManager_Access_list(user_id):
                 'message': 'شما دسترسی به این بخش ندارید !'
             }), 403
 
-        # Fetching user access records
-        user_access_records = UserAccess.query.filter_by(user_id=user_id).all()
+        # Fetching user access records with classification names
+        user_access_records = (
+            db.session.query(UserAccess, Classification.name)
+            .join(Classification, UserAccess.classifictions_id == Classification.id)
+            .filter(UserAccess.user_id == user_id)
+            .all()
+        )
+
         access_list = [{
-            'id': record.id,
-            'factor_id': record.factor_id,
-            'classifications_id': record.classifictions_id,
-            'created_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'expired_at': record.expired_at.strftime('%Y-%m-%d %H:%M:%S')
+            'id': record.UserAccess.id,
+            'factor_id': record.UserAccess.factor_id,
+            'classifications_id': record.UserAccess.classifictions_id,
+            'classification_name': record.name,  # Get the classification name
+            'created_at': record.UserAccess.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'expired_at': record.UserAccess.expired_at.strftime('%Y-%m-%d %H:%M:%S')
         } for record in user_access_records]
 
         return jsonify({
