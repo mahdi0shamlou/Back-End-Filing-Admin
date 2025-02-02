@@ -211,8 +211,8 @@ def files_edit():
         neighberhood_text = Neighborhood.query.filter_by(id=post.mahal).first()
         type_text = Types_file.query.filter_by(id=post.type).first()
 
-        post.mahal_text = neighberhood_text
-        post.type_text = type_text
+        post.mahal_text = neighberhood_text.name
+        post.type_text = type_text.name
         # Commit changes to the database
         db.session.commit()
 
