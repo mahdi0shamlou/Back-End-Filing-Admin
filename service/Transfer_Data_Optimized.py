@@ -5,8 +5,8 @@ import time
 
 async def get_mahal_id(mahal_text):
     async with aiomysql.connect(
-            host='5.34.195.27',
-            user='root',
+            host='185.190.39.252',
+            user='backend',
             password='ya mahdi',
             db='BackEndFiling',
             port=3306,
@@ -71,26 +71,35 @@ async def get_details_from_arkafile(id):
 
 async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_text):
     async with aiomysql.connect(
-            host='5.34.195.27',
-            user='root',
+            host='185.190.39.252',
+            user='backend',
             password='ya mahdi',
             db='BackEndFiling',
             port=3306,
             autocommit=True
     ) as connection:
         async with connection.cursor() as cursor:
+            if details[26] == 'none':
+                details[26] = 0
+            if details[27] == 'none':
+                details[27] = 0
+            if details[28] == 'none':
+                details[28] = 0
+            if details[29] == 'none':
+                details[29] = 0
+
             if details[17] == 0 and details[18] == 0:
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
-                int(details[19]), int(details[20]), details[10])
+                int(details[19]), int(details[20]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]))
             else:
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
-                int(details[17]), int(details[18]), details[10])
+                int(details[17]), int(details[18]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]))
 
             query = f"""INSERT INTO Posts (is_active, token, status, `number`, city,
                        city_text, mahal, mahal_text, `type`, type_text,
-                       title, price, price_two, meter) VALUES {param};"""
+                       title, price, price_two, meter, desck, Otagh, Make_years, PARKING, ELEVATOR, CABINET, BALCONY) VALUES {param};"""
             await cursor.execute(query)
 
 
@@ -150,5 +159,5 @@ async def process_index(i):
 
 
 if __name__ == "__main__":
-    for i in range(15000, 1992541, 100):
+    for i in range(30000, 1992541, 100):
         asyncio.run(main(i+100, i))
