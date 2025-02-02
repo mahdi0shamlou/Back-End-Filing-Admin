@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import users, users_admin, db, UserAccess
+from models import users, users_admin, db, UserAccess, Classification
 from datetime import datetime
 
 user_manger_bp = Blueprint('user_manger', __name__)
