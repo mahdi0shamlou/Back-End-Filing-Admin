@@ -99,6 +99,7 @@ def files_list():
             # Build a list of post details to send in the response
             posts_list = [{
                 'id': query.id,
+                'is_active': query.is_active,
                 'title': query.title,
                 'Images': query.Images,
                 'city': query.city_text,
@@ -161,6 +162,9 @@ def files_edit():
             return jsonify({'error': 'Post not found'}), 404
 
         # Update fields if provided in the request
+        if 'is_active' in request_data:
+            post.is_active = request_data['is_active']
+
         if 'status' in request_data:
             post.status = request_data['status']
 

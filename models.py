@@ -117,6 +117,7 @@ class Posts(db.Model):
     #----------------- start
     # general details
     id = db.Column(db.BigInteger, primary_key=True)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
     status = db.Column(db.Integer, nullable=False)
     token = db.Column(db.String(191), unique=True, nullable=False)
     # number
