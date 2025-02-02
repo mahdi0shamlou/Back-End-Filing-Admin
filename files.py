@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required
-from models import db, Posts
+from models import db, Posts, Neighborhood, Types_file
 from sqlalchemy import or_
 
 
@@ -208,7 +208,11 @@ def files_edit():
         # Update details and date
         if 'details' in request_data:
             post.details = request_data['details']
+        neighberhood_text = Neighborhood.query.filter_by(id=post.mahal).first()
+        type_text = Types_file.query.filter_by(id=post.type).first()
 
+        post.mahal_text = neighberhood_text
+        post.type_text = type_text
         # Commit changes to the database
         db.session.commit()
 
