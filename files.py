@@ -210,9 +210,11 @@ def files_edit():
             post.details = request_data['details']
         neighberhood_text = Neighborhood.query.filter_by(id=post.mahal).first()
         type_text = Types_file.query.filter_by(id=post.type).first()
+        city_text = Cities.query.filter_by(id=post.city).first()
 
         post.mahal_text = neighberhood_text.name
         post.type_text = type_text.name
+        post.city_text = city_text.name
         # Commit changes to the database
         db.session.commit()
 
