@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required
-from models import db, Posts, Neighborhood, Types_file
+from models import db, Posts, Neighborhood, Types_file, Cities
 from sqlalchemy import or_
 
 

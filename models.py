@@ -216,3 +216,13 @@ class DaysProfitForFactor(db.Model):
     days = db.Column(db.Integer, nullable=False)
     profit = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
+
+#--------------------------------
+#-------------- city model
+#-------------------------------
+class Cities(db.Model):
+    __tablename__ = 'Cities'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.now)
