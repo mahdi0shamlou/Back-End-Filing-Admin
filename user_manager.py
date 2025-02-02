@@ -458,10 +458,6 @@ def UserManager_Admin_Add():
 #--------------------------------------------
 #------------ user acsses
 #-------------------------------------------
-from flask import jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from your_application import db  # Adjust this import based on your project structure
-from your_application.models import UserAccess  # Adjust this import based on your project structure
 
 @user_manger_bp.route('/UserManager/Access/List/<int:user_id>', methods=['POST'])
 @jwt_required()
