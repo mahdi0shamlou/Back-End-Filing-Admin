@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import users, users_admin, db
+from models import users, users_admin, db, UserAccess
 from datetime import datetime
 
 user_manger_bp = Blueprint('user_manger', __name__)
@@ -448,6 +448,90 @@ def UserManager_Admin_Add():
         db.session.commit()
 
         return jsonify({'status': 'success', 'message': 'کاربر جدید با موفقیت اضافه شد!'}), 201
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+#--------------------------------------------
+#------------ user acsses
+#-------------------------------------------
+from flask import jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from your_application import db  # Adjust this import based on your project structure
+from your_application.models import UserAccess  # Adjust this import based on your project structure
+
+@user_manger_bp.route('/UserManager/Access/List/<int:user_id>', methods=['POST'])
+@jwt_required()
+def UserManager_Access_list(user_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1 or admin.type != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        # Fetching user access records
+        user_access_records = UserAccess.query.filter_by(user_id=user_id).all()
+        access_list = [{
+            'id': record.id,
+            'factor_id': record.factor_id,
+            'classifications_id': record.classifictions_id,
+            'created_at': record.created_at.isoformat(),
+            'updated_at': record.updated_at.isoformat(),
+            'expired_at': record.expired_at.isoformat()
+        } for record in user_access_records]
+
+        return jsonify({
+            'status': 'success',
+            'data': access_list
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+
+@user_manger_bp.route('/UserManager/Access/Delete/<int:access_id>', methods=['DELETE'])
+@jwt_required()
+def UserManager_Access_delete(access_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1 or admin.type != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        # Fetching the access record to delete
+        access_record = UserAccess.query.filter_by(id=access_id).first()
+        if not access_record:
+            return jsonify({
+                'status': 'error',
+                'message': 'دسترسی پیدا نشد!'
+            }), 404
+
+        # Deleting the access record
+        db.session.delete(access_record)
+        db.session.commit()
+
+        return jsonify({
+            'status': 'success',
+            'message': 'دسترسی با موفقیت حذف شد!'
+        }), 200
 
     except Exception as e:
         return jsonify({
