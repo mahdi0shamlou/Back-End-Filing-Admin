@@ -62,10 +62,14 @@ def factor_list():
         search_user_id = request_data.get('user_id', None)  # شناسه کاربر
         search_number = request_data.get('number', None)  # شماره فاکتور
         search_status = request_data.get('status', None)  # وضعیت فاکتور
+        search_factor_id = request_data.get('factor_id', None)  # شماره فاکتور
 
         # ساخت کوئری پایه
         query = Factor.query.join(users, users.id == Factor.user_id).add_columns(users)
 
+        # اضافه کردن فیلترها بر اساس پارامترهای جستجو
+        if search_factor_id:
+            query = query.filter(Factor.id == search_factor_id)
         # اضافه کردن فیلترها بر اساس پارامترهای جستجو
         if search_created_at:
             created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
