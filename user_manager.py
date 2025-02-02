@@ -480,9 +480,9 @@ def UserManager_Access_list(user_id):
             'id': record.id,
             'factor_id': record.factor_id,
             'classifications_id': record.classifictions_id,
-            'created_at': record.created_at.isoformat(),
-            'updated_at': record.updated_at.isoformat(),
-            'expired_at': record.expired_at.isoformat()
+            'created_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': record.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'expired_at': record.expired_at.strftime('%Y-%m-%d %H:%M:%S')
         } for record in user_access_records]
 
         return jsonify({
