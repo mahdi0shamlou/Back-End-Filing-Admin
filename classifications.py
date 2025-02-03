@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Classification, ClassificationTypes, ClassificationNeighborhood, users_admin, Neighborhood, Types_file
+from models import Cities, db, Classification, ClassificationTypes, ClassificationNeighborhood, users_admin, Neighborhood, Types_file
 from datetime import datetime
 
 
@@ -470,6 +470,42 @@ def Type_list():
             'status': 'success',
             'data': {
                 'types': Types_file_list_for_res_return
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
+
+# Route to get list of neighborhoods for classification
+@classification_bp.route('/Classification/City/List', methods=['POST'])
+@jwt_required()
+def City_list():
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        City_list_for_res = Cities.query.all()
+        City_list_for_res_return = [{
+            'id': citys.id,
+            'name': citys.name,
+            'created_at': citys.date_created.strftime('%Y-%m-%d %H:%M:%S')
+        } for citys in City_list_for_res]
+
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'types': City_list_for_res_return
             }
         }), 200
 
