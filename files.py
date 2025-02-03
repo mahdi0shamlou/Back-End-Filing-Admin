@@ -168,8 +168,8 @@ def files_edit():
         if 'status' in request_data:
             post.status = request_data['status']
 
-        if 'number' in request_data:
-            post.number = request_data['number']
+        if 'phone' in request_data:
+            post.number = request_data['phone']
 
         if 'city' in request_data:
             post.city = request_data['city']
