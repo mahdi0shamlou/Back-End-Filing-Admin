@@ -250,37 +250,57 @@ def classification_add_neighborhoods(classification_id):
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
             }), 403
-        classification = Classification.query.filter_by(id=classification_id)
-        if not classification.first():
+
+        classification = Classification.query.filter_by(id=classification_id).first()
+        if not classification:
             return jsonify({'status': 'error', 'message': 'دسته بندی پیدا نشد!'}), 404
 
         request_data = request.get_json()
-        neighborhood_id = request_data['neighborhood_id']
+        neighborhood_ids = request_data.get('neighborhood_id', [])
 
-        neighborhood = Neighborhood.query.filter_by(id=neighborhood_id)
-        if not neighborhood.first():
-            return jsonify({'status': 'error', 'message': 'محله پیدا نشد!'}), 404
+        if not isinstance(neighborhood_ids, list):
+            return jsonify({'status': 'error', 'message': 'neighborhood_id باید یک لیست باشد!'}), 400
 
-        query = ClassificationNeighborhood.query
-        query = query.filter(ClassificationNeighborhood.classifiction_id==classification_id)
-        query = query.filter(ClassificationNeighborhood.neighborhood_id==neighborhood_id)
+        added_neighborhoods = []
+        existing_neighborhoods = []
 
-        if not query.first():
-            new_ClassificationNeighborhood = ClassificationNeighborhood(
-                classifiction_id=classification_id,
-                neighborhood_id=neighborhood_id
+        for neighborhood_id in neighborhood_ids:
+            neighborhood = Neighborhood.query.filter_by(id=neighborhood_id).first()
+            if not neighborhood:
+                return jsonify({'status': 'error', 'message': f'محله با شناسه {neighborhood_id} پیدا نشد!'}), 404
+
+            query = ClassificationNeighborhood.query.filter(
+                ClassificationNeighborhood.classifiction_id == classification_id,
+                ClassificationNeighborhood.neighborhood_id == neighborhood_id
             )
-            db.session.add(new_ClassificationNeighborhood)
-            db.session.commit()
-            return jsonify({'status': 'okay', 'message': 'محله اضافه شد!'}), 200
-        else:
-            return jsonify({'status': 'error', 'message': 'محله اضافه شده بوده است!'}), 404
+
+            if not query.first():
+                new_classification_neighborhood = ClassificationNeighborhood(
+                    classifiction_id=classification_id,
+                    neighborhood_id=neighborhood_id
+                )
+                db.session.add(new_classification_neighborhood)
+                added_neighborhoods.append(neighborhood_id)
+            else:
+                existing_neighborhoods.append(neighborhood_id)
+
+        db.session.commit()
+
+        response_message = {
+            'status': 'okay',
+            'message': 'محله های زیر اضافه شدند!',
+            'added_neighborhoods': added_neighborhoods,
+            'existing_neighborhoods': existing_neighborhoods
+        }
+
+        return jsonify(response_message), 200
 
     except Exception as e:
         return jsonify({
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
+
 
 # Route to delete neighborhoods from classification
 @classification_bp.route('/Classification/Neighborhoods/<int:classification_id>/Delete', methods=['Delete'])
