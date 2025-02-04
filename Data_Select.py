@@ -25,7 +25,7 @@ def User_types():
         type_users_admin_res_return = [{
             'id': types.id,
             'name': types.name,
-            'created_at': types.date_created.strftime('%Y-%m-%d %H:%M:%S')
+            'created_at': types.created_at.strftime('%Y-%m-%d %H:%M:%S')
         } for types in type_users_admin_res]
 
         return jsonify({
@@ -61,7 +61,7 @@ def File_types():
         type_users_admin_res_return = [{
             'id': types.id,
             'name': types.name,
-            'created_at': types.date_created.strftime('%Y-%m-%d %H:%M:%S')
+            'created_at': types.created_at.strftime('%Y-%m-%d %H:%M:%S')
         } for types in type_users_admin_res]
 
         return jsonify({
