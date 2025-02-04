@@ -237,3 +237,21 @@ class Cities(db.Model):
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     name = db.Column(db.String(191), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now)
+
+#--------------------------------
+#-------------- types model
+#-------------------------------
+
+class type_users_admin(db.Model):
+    __tablename__ = 'type_users_admin'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+class type_post(db.Model):
+    __tablename__ = 'type_post'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(191), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)

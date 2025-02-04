@@ -14,6 +14,7 @@ from cluster import cluster_bp
 from factors import factors_bp
 from files import files_bp
 from factor_price_data import factors_price_system_bp
+from Data_Select import type_manager_bp
 
 
 config = configparser.ConfigParser()
@@ -57,6 +58,7 @@ app.register_blueprint(cluster_bp)
 app.register_blueprint(factors_bp)
 app.register_blueprint(files_bp)
 app.register_blueprint(factors_price_system_bp)
+app.register_blueprint(type_manager_bp)
 
 
 @jwt.expired_token_loader
