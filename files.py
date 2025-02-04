@@ -170,9 +170,6 @@ def files_edit():
         if not post:
             return jsonify({'error': 'Post not found'}), 404
 
-        # Update fields if provided in the request
-        if 'is_active' in request_data:
-            post.is_active = request_data['is_active']
 
         if 'status' in request_data:
             post.status = request_data['status']
@@ -213,17 +210,38 @@ def files_edit():
         if 'Make_years' in request_data:
             post.Make_years = request_data['Make_years']
 
-        if 'details' in request_data:
-            post.Make_years = request_data['details']
+        if 'floor' in request_data:
+            post.floor = request_data['floor']
+
+        if 'dwelling_units_per_floor' in request_data:
+            post.dwelling_units_per_floor = request_data['dwelling_units_per_floor']
+
+        if 'dwelling_unit_floor' in request_data:
+            post.dwelling_unit_floor = request_data['dwelling_unit_floor']
+
+        if 'wc' in request_data:
+            post.wc = request_data['wc']
+
+        if 'floor_type' in request_data:
+            post.floor_type = request_data['floor_type']
+
+        if 'water_provider' in request_data:
+            post.water_provider = request_data['water_provider']
+
+        if 'cool' in request_data:
+            post.cool = request_data['cool']
+
+        if 'heat' in request_data:
+            post.heat = request_data['heat']
+
+        if 'building_directions' in request_data:
+            post.building_directions = request_data['building_directions']
 
         # Update boolean fields
         for field in ['PARKING', 'ELEVATOR', 'CABINET', 'BALCONY']:
             if field in request_data:
                 setattr(post, field, bool(request_data[field]))
 
-        # Update details and date
-        if 'details' in request_data:
-            post.details = request_data['details']
         neighberhood_text = Neighborhood.query.filter_by(id=post.mahal).first()
         type_text = Types_file.query.filter_by(id=post.type).first()
         city_text = Cities.query.filter_by(id=post.city).first()
