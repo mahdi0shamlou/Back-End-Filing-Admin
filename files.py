@@ -204,6 +204,9 @@ def files_edit():
         if 'Make_years' in request_data:
             post.Make_years = request_data['Make_years']
 
+        if 'details' in request_data:
+            post.Make_years = request_data['details']
+
         # Update boolean fields
         for field in ['PARKING', 'ELEVATOR', 'CABINET', 'BALCONY']:
             if field in request_data:
