@@ -11,11 +11,12 @@ class GetActiveFile:
     @staticmethod
     async def get_active_files():
         connection = await aiomysql.connect(
-            host='5.34.195.27',
-            user='root',
+            host='185.190.39.252',
+            user='backend',
             password='ya mahdi',
             db='BackEndFiling',
             port=3306,
+            autocommit=True
         )
         async with connection.cursor() as cursor:
             await cursor.execute('SELECT id, token FROM Posts WHERE is_active = 1 LIMIT 10')
@@ -88,11 +89,12 @@ class ChangeIsActive:
             return
 
         connection = await aiomysql.connect(
-            host='5.34.195.27',
-            user='root',
+            host='185.190.39.252',
+            user='backend',
             password='ya mahdi',
             db='BackEndFiling',
             port=3306,
+            autocommit=True
         )
 
         try:
@@ -132,4 +134,6 @@ async def main():
 
 
 if __name__ == "__main__":
+    print('Start')
     asyncio.run(main())
+    print('End')
