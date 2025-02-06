@@ -35,6 +35,10 @@ async def get_type_id(text):
             return 31, "فروش دفتر"
         elif "اجاره" in text:
             return 41, "اجاره دفتر"
+    elif "کلنگی" in text:
+        return 13, "فروش کلنگی"
+
+
     return None, None
 
 
@@ -79,6 +83,11 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
             autocommit=True
     ) as connection:
         async with connection.cursor() as cursor:
+            details = list(details)
+            for i in range(len(details)):
+                if details[i] is None:
+                    details[i] = ''
+
             if details[26] == 'none':
                 details[26] = 0
             if details[27] == 'none':
@@ -88,18 +97,86 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
             if details[29] == 'none':
                 details[29] = 0
 
-            if details[17] == 0 and details[18] == 0:
+            try:
+                details[13] = int(details[13])
+            except:
+                details[13] = 0
+            try:
+                details[14] = int(details[14])
+            except:
+                details[14] = 0
+            try:
+                details[26] = int(details[26])
+            except:
+                details[26] = 0
+            try:
+                details[27] = int(details[27])
+            except:
+                details[27] = 0
+            try:
+                details[28] = int(details[28])
+            except:
+                details[28] = 0
+            try:
+                details[29] = int(details[28])
+            except:
+                details[29] = 0
+
+
+
+            if details[15] == '2':
+                try:
+                    details[19] = int(details[19])
+                except:
+                    details[19] = 0
+                try:
+                    details[20] = int(details[20])
+                except:
+                    details[20] = 0
+
+
+                param = (
+                0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], 13, "فروش کلنگی", details[1],
+                details[19], details[20], details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
+                details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
+                )
+
+            elif details[15] == '0':
+                try:
+                    details[19] = int(details[19])
+                except:
+                    details[19] = 0
+                try:
+                    details[20] = int(details[20])
+                except:
+                    details[20] = 0
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
-                int(details[19]), int(details[20]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]))
+                int(details[19]), int(details[20]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
+                details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
+                )
             else:
+                try:
+                    details[17] = int(details[17])
+                except:
+                    details[17] = 0
+                try:
+                    details[18] = int(details[18])
+                except:
+                    details[18] = 0
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
-                int(details[17]), int(details[18]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]))
+                int(details[17]), int(details[18]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
+                details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
+                )
+
+
+
 
             query = f"""INSERT INTO Posts (is_active, token, status, `number`, city,
                        city_text, mahal, mahal_text, `type`, type_text,
-                       title, price, price_two, meter, desck, Otagh, Make_years, PARKING, ELEVATOR, CABINET, BALCONY) VALUES {param};"""
+                       title, price, price_two, meter, desck, Otagh, Make_years, PARKING, ELEVATOR, CABINET, BALCONY, floor, dwelling_units_per_floor, dwelling_unit_floor, wc, floor_type, water_provider, cool, heat, building_directions) VALUES {param};"""
+            #print(query)
             await cursor.execute(query)
 
 
@@ -139,7 +216,7 @@ async def process_index(i):
             print(f"index {i} no details found")
             return False
 
-        mahal_text = details[9]
+        mahal_text = details[9].replace('\u200c', ' ')
         mahal_id, mahal_text_ret, city_id = await get_mahal_id(mahal_text)
 
         type_text = details[-13]
@@ -159,5 +236,5 @@ async def process_index(i):
 
 
 if __name__ == "__main__":
-    for i in range(30000, 1992541, 100):
+    for i in range(1_700_000, 1_701_000, 100):
         asyncio.run(main(i+100, i))
