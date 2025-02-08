@@ -127,6 +127,7 @@ def files_list():
                 'water_provider': query.water_provider,
                 'cool': query.cool,
                 'heat': query.heat,
+                '_map': True if query.map else False,
                 'building_directions': query.building_directions,
                 'date_created_persian': query.date_created_persian,
                 'date_created': query.date_created
@@ -257,3 +258,73 @@ def files_edit():
     except Exception as e:
         print(e)  # Log the error for debugging
         return jsonify({'error': 'An error occurred', 'message': str(e)}), 500
+
+import json
+
+@files_bp.route('/Files/Map/<int:post_id>', methods=['POST'])
+@jwt_required()
+def map_lat_lang(post_id):
+    try:
+
+            query = Posts.query.filter(Posts.id == post_id).first()
+
+            if query is None:
+                return jsonify({'message': 'Post not found'}), 404
+
+            response_data = {}
+
+            if query.map:
+                try:
+                    sanitized_map_string = query.map.replace("'", '"')
+
+                    map_data = json.loads(sanitized_map_string)  # Parse JSON from the text column
+
+
+                    widgets = map_data.get('widgets')
+                    if widgets and isinstance(widgets, list) and len(widgets) > 0:
+                        first_widget = widgets[0]
+                        if isinstance(first_widget, dict) and first_widget.get('widget_type') == 'MAP_ROW':
+                            data = first_widget.get('data')
+                            if isinstance(data, dict):
+                                location = data.get('location')
+                                if isinstance(location, dict) and location.get('type') == 'FUZZY':
+                                    fuzzy_data = location.get('fuzzy_data')
+                                    if isinstance(fuzzy_data, dict):
+                                        point = fuzzy_data.get('point')
+                                        if isinstance(point, dict):
+                                            response_data['latitude'] = point.get('latitude')
+                                            response_data['longitude'] = point.get('longitude')
+                                        else:
+                                            response_data['latitude'] = None
+                                            response_data['longitude'] = None
+                                    else:
+                                        response_data['latitude'] = None
+                                        response_data['longitude'] = None
+                                else:
+                                    response_data['latitude'] = None
+                                    response_data['longitude'] = None
+                            else:
+                                response_data['latitude'] = None
+                                response_data['longitude'] = None
+                        else:
+                            response_data['latitude'] = None
+                            response_data['longitude'] = None
+                    else:
+                        response_data['latitude'] = None
+                        response_data['longitude'] = None
+                except (KeyError, AttributeError, TypeError, json.JSONDecodeError) as e:
+                    print(f"Error extracting coordinates: {e}")
+                    response_data['latitude'] = None
+                    response_data['longitude'] = None
+            else:
+                response_data['latitude'] = None
+                response_data['longitude'] = None
+
+            return jsonify(response_data)
+
+
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'مشکلی پیش اومده لطفا دوباره امتحان کنید !', 'message': str(e)}), 500
+
+
