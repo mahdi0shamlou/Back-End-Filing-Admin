@@ -137,7 +137,7 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
 
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], 13, "فروش کلنگی", details[1],
-                details[19], details[20], details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
+                details[20], details[19], details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
                 details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
                 )
 
@@ -152,7 +152,7 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
                     details[20] = 0
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
-                int(details[19]), int(details[20]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
+                int(details[20]), int(details[19]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
                 details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
                 )
             else:
@@ -166,7 +166,7 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
                     details[18] = 0
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
-                int(details[17]), int(details[18]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
+                int(details[18]), int(details[17]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
                 details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
                 )
 
@@ -236,5 +236,5 @@ async def process_index(i):
 
 
 if __name__ == "__main__":
-    for i in range(1_700_000, 1_701_000, 100):
+    for i in range(1_600_000, 2_016_932, 100):
         asyncio.run(main(i+100, i))
