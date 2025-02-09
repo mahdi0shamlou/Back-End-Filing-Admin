@@ -1,6 +1,7 @@
 import asyncio
 import aiomysql
 import time
+from datetime import datetime
 
 
 async def get_mahal_id(mahal_text):
@@ -84,6 +85,13 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
     ) as connection:
         async with connection.cursor() as cursor:
             details = list(details)
+            # Convert date_created (details[42]) to a string in the correct format
+            if isinstance(details[42], datetime):
+                details[42] = details[42].strftime('%Y-%m-%d %H:%M:%S')
+            #date_object = datetime.strptime(details[42], "%Y-%m-%d %H:%M:%S")
+            #print(date_object)
+
+            #print(type(details[42]))
             for i in range(len(details)):
                 if details[i] is None:
                     details[i] = ''
@@ -138,7 +146,8 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], 13, "فروش کلنگی", details[1],
                 details[20], details[19], details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
-                details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
+                details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30],
+                    details[42]
                 )
 
             elif details[15] == '0':
@@ -153,7 +162,8 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
                 param = (
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
                 int(details[20]), int(details[19]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
-                details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
+                details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30],
+                    details[42]
                 )
             else:
                 try:
@@ -168,6 +178,7 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
                 0, details[21][19:], details[23], details[22], city_id, city_text, mahal_id, details[9], type_id, type_text, details[1],
                 int(details[18]), int(details[17]), details[10], details[3], int(details[13]), int(details[14]), int(details[26]), int(details[27]), int(details[28]), int(details[29]),
                 details[4], details[5], details[6], details[32], details[31], details[35], details[33], details[34], details[30]
+                    ,details[42]
                 )
 
 
@@ -175,7 +186,7 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
 
             query = f"""INSERT INTO Posts (is_active, token, status, `number`, city,
                        city_text, mahal, mahal_text, `type`, type_text,
-                       title, price, price_two, meter, desck, Otagh, Make_years, PARKING, ELEVATOR, CABINET, BALCONY, floor, dwelling_units_per_floor, dwelling_unit_floor, wc, floor_type, water_provider, cool, heat, building_directions) VALUES {param};"""
+                       title, price, price_two, meter, desck, Otagh, Make_years, PARKING, ELEVATOR, CABINET, BALCONY, floor, dwelling_units_per_floor, dwelling_unit_floor, wc, floor_type, water_provider, cool, heat, building_directions, date_created) VALUES {param};"""
             #print(query)
             await cursor.execute(query)
 
