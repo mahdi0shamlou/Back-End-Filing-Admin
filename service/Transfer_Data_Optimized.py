@@ -6,7 +6,7 @@ from datetime import datetime
 
 async def get_mahal_id(mahal_text):
     async with aiomysql.connect(
-            host='185.190.39.252',
+            host='localhost',
             user='backend',
             password='ya mahdi',
             db='BackEndFiling',
@@ -76,7 +76,7 @@ async def get_details_from_arkafile(id):
 
 async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, city_text):
     async with aiomysql.connect(
-            host='185.190.39.252',
+            host='localhost',
             user='backend',
             password='ya mahdi',
             db='BackEndFiling',
