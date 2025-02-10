@@ -19,7 +19,7 @@ class GetActiveFile:
             autocommit=True
         )
         async with connection.cursor() as cursor:
-            await cursor.execute('SELECT id, token FROM Posts WHERE is_active = 1 LIMIT 10')
+            await cursor.execute('SELECT id, token FROM Posts WHERE is_active = 1')
             rows = await cursor.fetchall()
             logging.info(f"Fetched {len(rows)} active files from the database.")
             return rows
