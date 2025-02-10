@@ -2,6 +2,7 @@ from flask import request, Blueprint, jsonify
 from flask_jwt_extended import jwt_required
 from models import db, Posts, Neighborhood, Types_file, Cities
 from sqlalchemy import or_
+import json
 
 
 
@@ -259,7 +260,6 @@ def files_edit():
         print(e)  # Log the error for debugging
         return jsonify({'error': 'An error occurred', 'message': str(e)}), 500
 
-import json
 
 @files_bp.route('/Files/Map/<int:post_id>', methods=['POST'])
 @jwt_required()
