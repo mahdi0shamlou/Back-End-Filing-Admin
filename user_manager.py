@@ -15,9 +15,7 @@ def UserManager_List():
     try:
         current_user = get_jwt_identity()
         user_phone = current_user['phone']
-
         admin = users_admin.query.filter_by(phone=user_phone).first()
-
         # Check if the current user is an admin
         if not admin or admin.status != 1:
             return jsonify({
@@ -34,7 +32,8 @@ def UserManager_List():
         search_phone = request_data.get('phone', None)
         search_address = request_data.get('address', None)
         search_email = request_data.get('email', None)
-        search_created_at = request_data.get('created_at', None)  # تاریخ ثبت نام
+        created_at_start = request_data.get('created_at_start', None)  # Start date for filtering
+        created_at_end = request_data.get('created_at_end', None)      # End date for filtering
 
         # ساخت کوئری پایه
         query = users.query
@@ -42,20 +41,22 @@ def UserManager_List():
         # اضافه کردن فیلترها بر اساس پارامترهای جستجو
         if search_name:
             query = query.filter(users.name.ilike(f'%{search_name}%'))
-
         if search_phone:
             query = query.filter(users.phone.ilike(f'%{search_phone}%'))
-
         if search_address:
             query = query.filter(users.address.ilike(f'%{search_address}%'))
-
         if search_email:
             query = query.filter(users.email.ilike(f'%{search_email}%'))
 
-        if search_created_at:
+        # Add filtering for date range
+        if created_at_start or created_at_end:
             try:
-                created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
-                query = query.filter(users.created_at >= created_at_date)
+                if created_at_start:
+                    start_date = datetime.strptime(created_at_start, '%Y-%m-%d')
+                    query = query.filter(users.created_at >= start_date)
+                if created_at_end:
+                    end_date = datetime.strptime(created_at_end, '%Y-%m-%d')
+                    query = query.filter(users.created_at < end_date)
             except ValueError:
                 return jsonify({'status': 'error', 'message': 'Invalid date format for created_at. Use YYYY-MM-DD.'}), 400
 
@@ -91,7 +92,6 @@ def UserManager_List():
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
-
 
 @user_manger_bp.route('/UserManager/<int:user_id>', methods=['GET'])
 @jwt_required()
