@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify, make_response
 from flask_jwt_extended import jwt_required
-from models import db, Posts, Neighborhood, Types_file, Cities, Classification
+from models import db, Posts, Neighborhood, Types_file, Cities, Classification, ClassificationTypes, ClassificationNeighborhood
 from sqlalchemy import or_
 import json
 
@@ -361,4 +361,50 @@ def users_access():
             'message': "error"
         }), 500)
 
+@files_bp.route('/Files/Class', methods=['POST'])
+@jwt_required()
+def users_access_class_new():
+    try:
+        request_data = request.get_json()
+        classification_id = request_data.get('class', 1)
+
+        # Get classification types with their names
+        types = (db.session.query(
+            ClassificationTypes.type,
+            Types_file.name.label('type_name')
+        )
+                 .join(Types_file, ClassificationTypes.type == Types_file.id)
+                 .filter(ClassificationTypes.classifiction_id == classification_id)
+                 .all())
+
+        types_list = [{
+            'id': type.type,
+            'name': type.type_name
+        } for type in types]
+
+        # Get neighborhoods through ClassificationNeighborhood
+        neighborhoods = (db.session.query(Neighborhood)
+                         .join(ClassificationNeighborhood)
+                         .filter(ClassificationNeighborhood.classifiction_id == classification_id)
+                         .all())
+
+        neighborhoods_list = [{
+            'id': neighborhood.id,
+            'name': neighborhood.name
+        } for neighborhood in neighborhoods]
+
+        response = {
+            'status': 'success',
+            'data': {
+                'types': types_list,
+                'neighborhoods': neighborhoods_list
+            }
+        }
+
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': "error"
+        }), 500
 
