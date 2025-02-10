@@ -245,16 +245,13 @@ def UserManager_Add():
 #---------- UserManger Of Admin users
 #------------------------------------
 
-
 @user_manger_bp.route('/UserManager/Admin/List', methods=['POST'])
 @jwt_required()
 def UserManager_Admin_List():
     try:
         current_user = get_jwt_identity()
         user_phone = current_user['phone']
-
         admin = users_admin.query.filter_by(phone=user_phone).first()
-
         if not admin or admin.status != 1:
             return jsonify({
                 'status': 'error',
@@ -269,11 +266,11 @@ def UserManager_Admin_List():
         search_name = request_data.get('name', None)
         search_phone = request_data.get('phone', None)
         search_address = request_data.get('address', None)
-        search_created_at = request_data.get('created_at', None)  # تاریخ ثبت نام
+        created_at_start = request_data.get('created_at_start', None)  # Start date for filtering
+        created_at_end = request_data.get('created_at_end', None)      # End date for filtering
         search_email = request_data.get('email', None)
         search_type = request_data.get('type', None)
         search_status = request_data.get('status', None)
-
 
         # ساخت کوئری پایه
         query = users_admin.query
@@ -281,29 +278,29 @@ def UserManager_Admin_List():
         # اضافه کردن فیلترها بر اساس پارامترهای جستجو
         if search_name:
             query = query.filter(users_admin.name.ilike(f'%{search_name}%'))
-
         if search_phone:
             query = query.filter(users_admin.phone.ilike(f'%{search_phone}%'))
-
         if search_address:
             query = query.filter(users_admin.address.ilike(f'%{search_address}%'))
-
         if search_email:
             query = query.filter(users_admin.email.ilike(f'%{search_email}%'))
 
-        if search_created_at:
+        # Add filtering for date range
+        if created_at_start or created_at_end:
             try:
-                created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
-                query = query.filter(users_admin.created_at >= created_at_date)
+                if created_at_start:
+                    start_date = datetime.strptime(created_at_start, '%Y-%m-%d')
+                    query = query.filter(users_admin.created_at >= start_date)
+                if created_at_end:
+                    end_date = datetime.strptime(created_at_end, '%Y-%m-%d')
+                    query = query.filter(users_admin.created_at <= end_date)
             except ValueError:
                 return jsonify({'status': 'error', 'message': 'Invalid date format for created_at. Use YYYY-MM-DD.'}), 400
 
         if search_type is not None:  # Check for type (can be 0, 1, 2...)
             query = query.filter(users_admin.type == search_type)
-
         if search_status is not None:  # Check for status (0 or 1)
             query = query.filter(users_admin.status == search_status)
-
 
         # انجام pagination
         pagination = query.paginate(
@@ -339,6 +336,7 @@ def UserManager_Admin_List():
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
+
 
 @user_manger_bp.route('/UserManager/Admin/Edit/<int:user_id>', methods=['PUT'])
 @jwt_required()
