@@ -1,6 +1,6 @@
-from flask import request, Blueprint, jsonify
+from flask import request, Blueprint, jsonify, make_response
 from flask_jwt_extended import jwt_required
-from models import db, Posts, Neighborhood, Types_file, Cities
+from models import db, Posts, Neighborhood, Types_file, Cities, Classification
 from sqlalchemy import or_
 import json
 
@@ -326,5 +326,39 @@ def map_lat_lang(post_id):
     except Exception as e:
         print(e)
         return jsonify({'error': 'مشکلی پیش اومده لطفا دوباره امتحان کنید !', 'message': str(e)}), 500
+
+@files_bp.route('/Files/Access', methods=['GET'])
+@jwt_required()
+def users_access():
+    try:
+
+        classifications = db.session.query(Classification).all()
+
+
+        results = []
+        for classification in classifications:
+            results.append({
+                'id': classification.id,
+                'name': classification.name,
+                'created_at': classification.created_at.strftime('%Y-%m-%d %H:%M:%S') if classification.created_at else None,
+                'updated_at': classification.updated_at.strftime('%Y-%m-%d %H:%M:%S') if classification.updated_at else None
+            })
+
+        if results is None:
+            return make_response(jsonify({
+                'status': 'error',
+                'message': 'An error occurred while fetching data'
+            }), 500)
+
+        return make_response(jsonify({
+            'status': 'success',
+            'data': results
+        }), 200)
+
+    except Exception as e:
+        return make_response(jsonify({
+            'status': 'error',
+            'message': "error"
+        }), 500)
 
 
