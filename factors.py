@@ -41,9 +41,7 @@ def factor_list():
     try:
         current_user = get_jwt_identity()
         user_phone = current_user['phone']
-
         admin = users_admin.query.filter_by(phone=user_phone).first()
-
         if not admin or admin.status != 1:
             return jsonify({
                 'status': 'error',
@@ -55,14 +53,16 @@ def factor_list():
         per_page = request_data.get('perpage', 10)
 
         # دریافت پارامترهای جستجو
-        search_created_at = request_data.get('created_at', None)  # تاریخ ایجاد
-        search_expired_at = request_data.get('expired_at', None)  # تاریخ انقضا
-        search_price_min = request_data.get('price_min', None)  # حداقل قیمت
-        search_price_max = request_data.get('price_max', None)  # حداکثر قیمت
-        search_user_id = request_data.get('user_id', None)  # شناسه کاربر
-        search_number = request_data.get('number', None)  # شماره فاکتور
-        search_status = request_data.get('status', None)  # وضعیت فاکتور
-        search_factor_id = request_data.get('factor_id', None)  # شماره فاکتور
+        created_at_start = request_data.get('created_at_start', None)  # Start date for created_at
+        created_at_end = request_data.get('created_at_end', None)      # End date for created_at
+        expired_at_start = request_data.get('expired_at_start', None)  # Start date for expired_at
+        expired_at_end = request_data.get('expired_at_end', None)      # End date for expired_at
+        search_price_min = request_data.get('price_min', None)         # Minimum price
+        search_price_max = request_data.get('price_max', None)         # Maximum price
+        search_user_id = request_data.get('user_id', None)             # User ID
+        search_number = request_data.get('number', None)               # Factor number
+        search_status = request_data.get('status', None)               # Factor status
+        search_factor_id = request_data.get('factor_id', None)         # Factor ID
 
         # ساخت کوئری پایه
         query = Factor.query.join(users, users.id == Factor.user_id).add_columns(users)
@@ -70,27 +70,39 @@ def factor_list():
         # اضافه کردن فیلترها بر اساس پارامترهای جستجو
         if search_factor_id:
             query = query.filter(Factor.id == search_factor_id)
-        # اضافه کردن فیلترها بر اساس پارامترهای جستجو
-        if search_created_at:
-            created_at_date = datetime.strptime(search_created_at, '%Y-%m-%d')
-            query = query.filter(Factor.created_at >= created_at_date)
 
-        if search_expired_at:
-            expired_at_date = datetime.strptime(search_expired_at, '%Y-%m-%d')
-            query = query.filter(Factor.expired_at >= expired_at_date)
+        # Add filtering for created_at range
+        if created_at_start or created_at_end:
+            try:
+                if created_at_start:
+                    start_date = datetime.strptime(created_at_start, '%Y-%m-%d')
+                    query = query.filter(Factor.created_at >= start_date)
+                if created_at_end:
+                    end_date = datetime.strptime(created_at_end, '%Y-%m-%d')
+                    query = query.filter(Factor.created_at <= end_date)
+            except ValueError:
+                return jsonify({'status': 'error', 'message': 'Invalid date format for created_at. Use YYYY-MM-DD.'}), 400
+
+        # Add filtering for expired_at range
+        if expired_at_start or expired_at_end:
+            try:
+                if expired_at_start:
+                    start_date = datetime.strptime(expired_at_start, '%Y-%m-%d')
+                    query = query.filter(Factor.expired_at >= start_date)
+                if expired_at_end:
+                    end_date = datetime.strptime(expired_at_end, '%Y-%m-%d')
+                    query = query.filter(Factor.expired_at <= end_date)
+            except ValueError:
+                return jsonify({'status': 'error', 'message': 'Invalid date format for expired_at. Use YYYY-MM-DD.'}), 400
 
         if search_price_min is not None:
             query = query.filter(Factor.price >= search_price_min)
-
         if search_price_max is not None:
             query = query.filter(Factor.price <= search_price_max)
-
         if search_user_id is not None:
             query = query.filter(Factor.user_id == search_user_id)
-
         if search_number is not None:
             query = query.filter(Factor.number == search_number)
-
         if search_status is not None:
             query = query.filter(Factor.status == search_status)
 
@@ -132,7 +144,6 @@ def factor_list():
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
-
 
 # Route to list cluster for create factors
 @factors_bp.route('/Factor/Cluster', methods=['GET'])
