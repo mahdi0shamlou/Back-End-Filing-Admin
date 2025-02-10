@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required
 from models import db, Posts, Neighborhood, Types_file, Cities, Classification, ClassificationTypes, ClassificationNeighborhood
 from sqlalchemy import or_
 import json
+from datetime import datetime
 
 
 
@@ -30,12 +31,18 @@ def files_list():
             make_to = request_data.get('make_two')
             desck = request_data.get('desck', None)
             status = request_data.get('status', None)
+            is_active = request_data.get('is_active', True)
             allowed_mahals = request_data.get('mahal', [])
             allowed_type_ids = request_data.get('types', [])
+            date_start = request_data.get('date_start', None)
+            date_end = request_data.get('date_end', None)
 
             query = Posts.query
             if status:
                 query = query.filter(Posts.status == status)
+
+            if is_active:
+                query = query.filter(Posts.is_active == is_active)
 
             if allowed_mahals:
                 query = query.filter(Posts.mahal.in_(allowed_mahals))
@@ -89,6 +96,12 @@ def files_list():
                     Posts.desck.ilike(f'%{desck}%'),
                     Posts.title.ilike(f'%{desck}%')
                 ))
+
+            if date_start is not None:
+                query = query.filter(Posts.date_created >= datetime.strptime(date_start, '%Y-%m-%d'))
+
+            if date_end is not None:
+                query = query.filter(Posts.date_created <= datetime.strptime(date_end, '%Y-%m-%d'))
 
             per_page = 12
 
