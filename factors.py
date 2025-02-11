@@ -149,6 +149,7 @@ def factor_list():
 @factors_bp.route('/Factor/Cluster', methods=['GET'])
 @jwt_required()
 def get_factors_cluster():
+
     try:
         factors = Classifictions_FOR_Factors.query.all()
 
@@ -183,8 +184,10 @@ def create_factor():
         number = data.get('number', 1)
         classifications_for_factors = data.get('classifications_for_factors', [])
         time_delta = data.get('time_delta', 30)  # اگر داده‌ای وجود نداشته باشد، پیش‌فرض 30 خواهد بود
+        """
         if time_delta not in [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360]:
             return jsonify({"message": "خطا در ایجاد فاکتور تعداد روز ها باید به ماه باشد"}), 500
+        """
         # زمان فعلی
         now = datetime.now()
         # محاسبه تاریخ جدید با اضافه کردن time_delta به زمان فعلی
@@ -194,13 +197,14 @@ def create_factor():
         if not all([factor_type]):
             return jsonify({"message": "تمام فیلدهای مورد نظر را وارد کنید!"}), 400
 
+        price = data.get('price', Get_price(data))
         # ایجاد فاکتور جدید
         new_factor = Factor(
             user_id=user.id,
             status=0,
             type=factor_type,
             number=number,
-            price=Get_price(data),
+            price=price,
             expired_at=new_date
         )
 
