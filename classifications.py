@@ -214,7 +214,7 @@ def classification_edit(classification_id):
                 'message': 'شما دسترسی به این بخش ندارید !'
             }), 403
 
-        classification = Classification.query.get(classification_id)
+        classification = Classification.query.filter_by(id=classification_id).first()
 
         if not classification:
             return jsonify({'status': 'error', 'message': 'دسته بندی پیدا نشد!'}), 404

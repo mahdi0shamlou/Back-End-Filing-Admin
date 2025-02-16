@@ -191,6 +191,38 @@ def cluster_details(cluster_id):
             'status': 'error',
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
+
+@cluster_details.route('/Cluster/Edit/<int:cluster_id>', methods=['PUT'])
+@jwt_required()
+def cluster_edit(cluster_id):
+    try:
+        current_user = get_jwt_identity()
+        user_phone = current_user['phone']
+
+        admin = users_admin.query.filter_by(phone=user_phone).first()
+
+        if not admin or admin.status != 1:
+            return jsonify({
+                'status': 'error',
+                'message': 'شما دسترسی به این بخش ندارید !'
+            }), 403
+
+        cluster = Classifictions_FOR_Factors.query.filter_by(id=cluster_id).first()
+
+        if not cluster:
+            return jsonify({'status': 'error', 'message': 'طبقه بندی پیدا نشد!'}), 404
+        request_data = request.get_json()
+        cluster.name = request_data['name']
+        cluster.price = request_data['price']
+        db.session.commit()
+
+        return jsonify({'status': 'success', 'message': 'طبقه بندی با موفقیت تغییر یافت!'}), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'مشکلی پیش اومده ! ：{str(e)}'
+        }), 500
 #-----------------------------------------------------
 # Create and list and Delete and details of Classification of Cluster
 #-----------------------------------------------------
