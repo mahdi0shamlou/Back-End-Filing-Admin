@@ -192,7 +192,7 @@ def cluster_details(cluster_id):
             'message': f'مشکلی پیش اومده ! ：{str(e)}'
         }), 500
 
-@cluster_details.route('/Cluster/Edit/<int:cluster_id>', methods=['PUT'])
+@cluster_bp.route('/Cluster/Edit/<int:cluster_id>', methods=['PUT'])
 @jwt_required()
 def cluster_edit(cluster_id):
     try:
