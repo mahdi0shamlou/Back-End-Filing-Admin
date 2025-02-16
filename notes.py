@@ -126,6 +126,9 @@ def delete_note_for_file(note_id):
             'message': f'مشکلی پیش اومده ! : {str(e)}'
         }), 500
 
+
+
+
 # Route: List notes for a user
 @notes_bp.route('/Notes/User/<int:user_id>', methods=['GET'])
 @jwt_required()
