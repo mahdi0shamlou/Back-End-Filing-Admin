@@ -118,6 +118,7 @@ class Posts(db.Model):
     # general details
     id = db.Column(db.BigInteger, primary_key=True)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
+    is_complete = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.Integer, nullable=False)
     token = db.Column(db.String(191), unique=True, nullable=False)
     # number
@@ -148,6 +149,8 @@ class Posts(db.Model):
     BALCONY = db.Column(db.Boolean, default=False)
     # dict data
     details = db.Column(db.Text)
+    address = db.Column(db.Text)
+    malk_name = db.Column(db.String(191))
     #data
     floor = db.Column(db.String(191))
     dwelling_units_per_floor = db.Column(db.String(191))
