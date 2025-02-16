@@ -258,3 +258,24 @@ class type_post(db.Model):
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     name = db.Column(db.String(191), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
+
+#------------------------------
+#--------- admin notes
+#------------------------------
+class FileNotes(db.Model):
+    __tablename__ = 'file_note'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    note = db.Column(db.Text, nullable=False)
+    file_id = db.Column(db.BigInteger)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+
+class UserNotes(db.Model):
+    __tablename__ = 'user_note'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    note = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.BigInteger)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+

@@ -85,6 +85,32 @@ class DatabaseManager:
         self.cursor.execute(create_table_query)
         self.connection.commit()
 
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS file_note (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            file_id BIGINT(20) UNSIGNED NOT NULL,
+            note TEXT NOT NULL,
+            FOREIGN KEY (file_id) REFERENCES Posts(id) ON DELETE CASCADE,
+            created_at TIMESTAMP NULL DEFAULT NULL,
+            PRIMARY KEY (id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        """
+        self.cursor.execute(create_table_query)
+        self.connection.commit()
+
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS user_note (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            user_id BIGINT(20) UNSIGNED NOT NULL
+            note VARCHAR(191) NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            created_at TIMESTAMP NULL DEFAULT NULL,
+            PRIMARY KEY (id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        """
+        self.cursor.execute(create_table_query)
+        self.connection.commit()
+
     def close(self):
         self.cursor.close()
         self.connection.close()
