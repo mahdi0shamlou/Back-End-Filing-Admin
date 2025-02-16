@@ -221,13 +221,21 @@ def UserManager_Add():
 
         request_data = request.get_json()
 
+        username = request_data.get('username')
+        password = request_data.get('password')
+        name = request_data.get('name', None)
+        phone = request_data.get('phone')
+        address = request_data.get('address', None)
+        email = request_data.get('email', None)
+
+
         new_user = users(
-            username=request_data['username'],
-            password=request_data['password'],  # توجه: رمز عبور باید هش شود!
-            name=request_data['name'],
-            phone=request_data['phone'],
-            address=request_data['address'],
-            email=request_data['email']
+            username=username,
+            password=password,  # توجه: رمز عبور باید هش شود!
+            name=name,
+            phone=phone,
+            address=address,
+            email=email
         )
 
         db.session.add(new_user)
@@ -439,7 +447,6 @@ def UserManager_Admin_Add():
             email=request_data['email'],
             status=request_data['status'],
             type=request_data['type']
-
         )
 
         db.session.add(new_user)
