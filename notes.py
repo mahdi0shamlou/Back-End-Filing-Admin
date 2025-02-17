@@ -128,7 +128,6 @@ def delete_note_for_file(note_id):
 
 
 
-
 # Route: List notes for a user
 @notes_bp.route('/Notes/User/<int:user_id>', methods=['GET'])
 @jwt_required()
