@@ -186,7 +186,7 @@ async def insert_data_to_server(details, mahal_id, type_id, type_text, city_id, 
 
             query = f"""INSERT INTO Posts (is_active, token, status, `number`, city,
                        city_text, mahal, mahal_text, `type`, type_text,
-                       title, price, price_two, meter, desck, Otagh, Make_years, PARKING, ELEVATOR, CABINET, BALCONY, floor, dwelling_units_per_floor, dwelling_unit_floor, wc, floor_type, water_provider, cool, heat, building_directions, date_created, malk_name, address) VALUES {param};"""
+                       title, price, price_two, meter, desck, Otagh, Make_years, PARKING, ELEVATOR, CABINET, BALCONY, floor, dwelling_units_per_floor, dwelling_unit_floor, wc, floor_type, water_provider, cool, heat, building_directions, date_created, address, malk_name) VALUES {param};"""
             #print(query)
             await cursor.execute(query)
 
