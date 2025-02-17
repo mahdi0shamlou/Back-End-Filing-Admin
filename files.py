@@ -130,6 +130,7 @@ def files_list():
                 'id': query.id,
                 'is_active': query.is_active,
                 'status_type' : query.status_type,
+                'status': query.status,
                 'title': query.title,
                 'Images': query.Images,
                 'city': query.city_text,
@@ -209,6 +210,9 @@ def files_edit():
 
         if 'status' in request_data:
             post.status = request_data['status']
+
+        if 'status_type' in request_data:
+            post.status_type = request_data['status_type']
 
         if 'phone' in request_data:
             post.number = request_data['phone']
