@@ -42,7 +42,7 @@ def factor_list():
         current_user = get_jwt_identity()
         user_phone = current_user['phone']
         admin = users_admin.query.filter_by(phone=user_phone).first()
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'

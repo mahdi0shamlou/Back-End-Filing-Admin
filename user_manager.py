@@ -17,7 +17,7 @@ def UserManager_List():
         user_phone = current_user['phone']
         admin = users_admin.query.filter_by(phone=user_phone).first()
         # Check if the current user is an admin
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -102,7 +102,7 @@ def UserManager_Details(user_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -141,7 +141,7 @@ def UserManager_Edit(user_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -181,7 +181,7 @@ def UserManager_Delete(user_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -213,7 +213,7 @@ def UserManager_Add():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -260,7 +260,7 @@ def UserManager_Admin_List():
         current_user = get_jwt_identity()
         user_phone = current_user['phone']
         admin = users_admin.query.filter_by(phone=user_phone).first()
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -308,7 +308,7 @@ def UserManager_Admin_List():
         if search_type is not None:  # Check for type (can be 0, 1, 2...)
             query = query.filter(users_admin.type == search_type)
         if search_status is not None:  # Check for status (0 or 1)
-            query = query.filter(users_admin.status == search_status)
+            query = query.filter(users_admin.type == search_status)
 
         # انجام pagination
         pagination = query.paginate(
@@ -355,7 +355,7 @@ def UserManager_Admin_Edit(user_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1 or admin.type != 1:
+        if not admin or admin.type != 1 or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -398,7 +398,7 @@ def UserManager_Admin_Delete(user_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1 or admin.type != 1:
+        if not admin or admin.type != 1 or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -430,7 +430,7 @@ def UserManager_Admin_Add():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1 or admin.type != 1:
+        if not admin or admin.type != 1 or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -473,7 +473,7 @@ def UserManager_Access_list(user_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1 or admin.type != 1:
+        if not admin or admin.type != 1 or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -517,7 +517,7 @@ def UserManager_Access_delete(access_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1 or admin.type != 1:
+        if not admin or admin.type != 1 or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'

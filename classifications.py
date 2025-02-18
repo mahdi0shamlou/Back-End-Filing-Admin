@@ -18,7 +18,7 @@ def classification_list():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -144,7 +144,7 @@ def classification_create():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -177,7 +177,7 @@ def classification_delete(classification_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -208,7 +208,7 @@ def classification_edit(classification_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -245,7 +245,7 @@ def classification_add_neighborhoods(classification_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -312,7 +312,7 @@ def classification_delete_neighborhoods(classification_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -349,7 +349,7 @@ def neighborhoods_list():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -390,7 +390,7 @@ def classification_add_type(classification_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -437,7 +437,7 @@ def classification_delete_type(classification_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -473,7 +473,7 @@ def Type_list():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -509,7 +509,7 @@ def City_list():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'

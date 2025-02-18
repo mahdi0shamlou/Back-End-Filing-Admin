@@ -17,7 +17,7 @@ def cluster_list():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -92,7 +92,7 @@ def cluster_create():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -125,7 +125,7 @@ def cluster_delete(cluster_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -201,7 +201,7 @@ def cluster_edit(cluster_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -240,7 +240,7 @@ def clusters_add_classifications(cluster_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -287,7 +287,7 @@ def clusters_delete_classifications(cluster_id):
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
@@ -325,7 +325,7 @@ def classifications_list():
 
         admin = users_admin.query.filter_by(phone=user_phone).first()
 
-        if not admin or admin.status != 1:
+        if not admin or admin.type != 1:
             return jsonify({
                 'status': 'error',
                 'message': 'شما دسترسی به این بخش ندارید !'
