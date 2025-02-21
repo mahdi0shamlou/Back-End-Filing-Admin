@@ -1,3 +1,5 @@
+import time
+
 import pymysql
 import logging
 
@@ -41,6 +43,7 @@ class GetStatusOfFileFromDivar:
                 ChangeIsActive.change_is_active(post_id)  # آپدیت فوری فایل با وضعیت 404
             elif status == 429:
                 logging.warning(f"Post ID {post_id} rate-limited (429), keeping in the list.")
+                time.sleep(1)
                 remaining_data.append(i)  # این فایل باید مجدد بررسی شود
             elif status == 200:
                 logging.info(f"Post ID {post_id} is active (200).")
