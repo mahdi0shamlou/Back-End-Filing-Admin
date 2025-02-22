@@ -103,8 +103,10 @@ def files_list():
             if desck is not None:
                 query = query.filter(or_(
                     Posts.desck.ilike(f'%{desck}%'),
-                    Posts.title.ilike(f'%{desck}%')
+                    Posts.title.ilike(f'%{desck}%'),
+                    Posts.number.ilike(f'%{desck}%')
                 ))
+
 
             if date_start is not None:
                 query = query.filter(Posts.date_created >= datetime.strptime(date_start, '%Y-%m-%d'))
