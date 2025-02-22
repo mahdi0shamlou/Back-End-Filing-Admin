@@ -35,6 +35,7 @@ class GetActiveFile:
                 return rows
         except Exception as e:
             logging.error(f"Error fetching data from the database: {e}")
+            return []  # Return an empty list in case of an error
         finally:
             if connection:
                 connection.close()
@@ -145,17 +146,28 @@ class UpdateLastCheckedAt:
 
 
 def main():
-    print('Start')
-    data = GetActiveFile.get_active_files()
-    num_records_fetched = len(data)
-    while data:
-        logging.info(f"Processing {len(data)} posts...")
-        remaining_data = GetStatusOfFileFromDivar.get_status(data)
-        # Update data for next iteration (only keep posts that need re-checking)
-        data = remaining_data
-    logging.info(f"Total records fetched from DB: {num_records_fetched}")
-    logging.info("All posts have been processed.")
-    print('End')
+    while True:  # Infinite loop
+        try:
+            print('Start')
+            data = GetActiveFile.get_active_files()
+            num_records_fetched = len(data)
+            while data:
+                logging.info(f"Processing {len(data)} posts...")
+                remaining_data = GetStatusOfFileFromDivar.get_status(data)
+                # Update data for next iteration (only keep posts that need re-checking)
+                data = remaining_data
+            logging.info(f"Total records fetched from DB: {num_records_fetched}")
+            logging.info("All posts have been processed.")
+            print('End')
+        except Exception as e:
+            logging.error(f"An unexpected error occurred: {e}")
+            logging.info("Restarting the process after a short delay...")
+            time.sleep(60)  # Wait for 1 minute before restarting in case of an error
+            continue  # Restart the loop
+
+        # Sleep for 12 hours before the next iteration
+        logging.info("Sleeping for 12 hours before the next check...")
+        time.sleep(12 * 60 * 60)  # Sleep for 12 hours
 
 
 if __name__ == "__main__":
