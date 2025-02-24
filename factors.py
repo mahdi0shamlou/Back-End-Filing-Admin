@@ -100,7 +100,7 @@ def factor_list():
         if search_price_max is not None:
             query = query.filter(Factor.price <= search_price_max)
         if search_user_id is not None:
-            query = query.filter(Factor.user_id == search_user_id)
+            query = query.filter(users.phone == search_user_id)
         if search_number is not None:
             query = query.filter(Factor.number == search_number)
         if search_status is not None:
