@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify, make_response
 from flask_jwt_extended import jwt_required
-from models import db, Posts, Neighborhood, Types_file, Cities, Classification, ClassificationTypes, ClassificationNeighborhood
+from models import MoshaverNumber, db, Posts, Neighborhood, Types_file, Cities, Classification, ClassificationTypes, ClassificationNeighborhood
 from sqlalchemy import or_
 import json
 from datetime import datetime
@@ -214,10 +214,29 @@ def files_edit():
             post.status = request_data['status']
 
         if 'status_type' in request_data:
-            post.status_type = request_data['status_type']
+            if request_data['status_type'] == 4:
+                post.status = 0
+                post.status_type = 4
+
+                if post.number != None:
+                    new_MoshaverNumber = MoshaverNumber(
+                        phone=post.number
+                    )
+                    db.session.add(new_MoshaverNumber)
+                    db.session.commit()
+
+                return jsonify({'error': 'فایل به مشاور تغییر یافت !'}), 404
+            else:
+                post.status_type = request_data['status_type']
 
         if 'phone' in request_data:
-            post.number = request_data['phone']
+            moshaver_number = MoshaverNumber.query.filter(MoshaverNumber.phone == request_data['phone']).first()
+            if not moshaver_number:
+                post.number = request_data['phone']
+            else:
+                post.status = 0
+                post.status_type = 4
+                return jsonify({'error': 'شماره تلفن مشاور است ! فایل به مشاور تغییر یافت !'}), 404
 
         if 'city' in request_data:
             post.city = request_data['city']
