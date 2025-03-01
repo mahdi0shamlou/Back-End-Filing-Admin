@@ -223,8 +223,7 @@ def files_edit():
                         phone=post.number
                     )
                     db.session.add(new_MoshaverNumber)
-                    db.session.commit()
-
+                db.session.commit()
                 return jsonify({'error': 'فایل به مشاور تغییر یافت !'}), 200
             else:
                 post.status_type = request_data['status_type']
@@ -236,6 +235,7 @@ def files_edit():
             else:
                 post.status = 0
                 post.status_type = 4
+                db.session.commit()
                 return jsonify({'error': 'شماره تلفن مشاور است ! فایل به مشاور تغییر یافت !'}), 200
 
         if 'city' in request_data:
