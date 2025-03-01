@@ -280,3 +280,13 @@ class UserNotes(db.Model):
     user_id = db.Column(db.BigInteger)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
+#------------------------------
+#--------- moshaver number
+#------------------------------
+class MoshaverNumber(db.Model):
+    __tablename__ = 'moshaver_number'
+
+    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    phone = db.Column(db.String(191), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
