@@ -223,6 +223,7 @@ def files_edit():
                         phone=post.number
                     )
                     db.session.add(new_MoshaverNumber)
+                    db.session.commit()
                 db.session.commit()
                 return jsonify({'error': 'فایل به مشاور تغییر یافت !'}), 200
             else:
