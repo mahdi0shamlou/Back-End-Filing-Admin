@@ -235,6 +235,7 @@ def files_edit():
             else:
                 post.status = 0
                 post.status_type = 4
+                post.number = request_data['phone']
                 db.session.commit()
                 return jsonify({'error': 'شماره تلفن مشاور است ! فایل به مشاور تغییر یافت !'}), 200
 
