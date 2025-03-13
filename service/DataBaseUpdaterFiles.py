@@ -13,7 +13,7 @@ try:
     cursor = conn.cursor()
     # Insert in batches, skipping duplicates
     query = f"""
-    INSERT IGNORE INTO Posts_Copy (
+    INSERT IGNORE INTO Posts (
         status, is_active, status_type, token, number, city, city_text, 
         mahal, mahal_text, type, type_text, title, price, price_two, 
         meter, desck, map, Images, details, address, malk_name, 
@@ -30,9 +30,7 @@ try:
         BALCONY, floor, dwelling_units_per_floor, dwelling_unit_floor, 
         wc, floor_type, water_provider, cool, heat, building_directions, 
         date_created_persian, date_created
-    FROM Posts 
-    ORDER BY date_created
-    LIMIT 1000;
+    FROM Posts_Copy;
     """
 
     cursor.execute(query)
